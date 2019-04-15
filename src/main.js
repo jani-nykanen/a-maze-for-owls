@@ -8,7 +8,22 @@ let main = function() {
     // Assets
     let assetContent = {
 
-        // Fill this
+        // Bitmaps
+        bitmapPath: "assets/bitmaps/",
+        bitmaps: {
+
+            background: "background.png",
+            clouds: "clouds.png",
+            tileset: "tileset.png",
+            trees: "trees.png"
+        },
+
+        // Documents
+        docPath: "assets/maps/",
+        documents: {
+
+            map: "map.tmx"
+        }
     }
 
     // Gamepad config

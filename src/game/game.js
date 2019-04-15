@@ -1,10 +1,15 @@
-// The default starting scene
-// (c) Insert your name here
+// Game secene
+// (c) 2019 Jani Nykänen
 
-// Game scene
+
+// Constructor
 let Game = function() {
 
     this.name = "game";
+
+    // Create components that do not
+    // require assets
+    this.cam = new Camera(0, 0);
 }
 
 
@@ -18,20 +23,25 @@ Game.prototype.init = function(evMan) {
 // On load
 Game.prototype.onLoad = function(assets) {
 
-    // Implement
+    // Create stage
+    this.stage = new Stage(assets.documents);
 }
 
 
 // Update
 Game.prototype.update = function(evMan, tm) {
 
-    // Implement
+    // Update stage
+    this.stage.update(tm);
 }
 
 
 // Draw
 Game.prototype.draw = function(g) {
 
-    // Clear to gray
-    g.clear(170, 170, 170);
+    // Reset camerea
+    g.setTranslation(0, 0);
+
+    // Draw stage
+    this.stage.draw(this.cam, g);
 }

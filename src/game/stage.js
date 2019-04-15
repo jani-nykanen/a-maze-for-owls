@@ -7,9 +7,41 @@ let Stage = function(docs) {
 
     // Set defaults
     this.cloudPos = 0;
+    this.waterPos = 0;
+    this.wave = 0;
 
     // Create tilemap
     this.tmap = new Tilemap(docs.map);
+}
+
+
+// Draw water
+Stage.prototype.drawWater = function(cam, g) {
+
+    const WAVE_AMPL = 2;
+
+    // Draw surface
+    let surfY = this.tmap.height*16 - 144 - 16;
+    if(cam.pos.y+144 >= surfY && cam.pos.y <= surfY+16) {
+
+        let startx = ((cam.pos.x/16) | 0) -1;   
+        let ex = startx + (192/16) + 2;
+
+        let yplus = ( (Math.sin(this.wave)+1) * WAVE_AMPL) | 0;
+
+        for(let x = startx; x <= ex; ++ x) {
+
+            g.drawBitmapRegion(g.bitmaps.tileset, 0, 48, 16, 16,
+                x*16 - this.waterPos, surfY+yplus);
+        }
+    }
+
+    // Draw black background
+    if(cam.pos.y+144 >= surfY+16) {
+
+        g.fillRect(cam.pos.x, surfY+16, 192, 144,
+            {r: 0, g: 0, b: 0});
+    }
 }
 
 
@@ -50,11 +82,22 @@ Stage.prototype.drawTilemap = function(cam, g) {
 Stage.prototype.update = function(tm) {
 
     const CLOUD_SPEED = 0.25;
+    const WATER_SPEED = 0.125;
+    const WAVE_SPEED = 0.040;
 
     // Update clouds
     this.cloudPos += CLOUD_SPEED * tm;
     if(this.cloudPos >= 192)
         this.cloudPos -= 192;
+
+    // Update water
+    this.waterPos += WATER_SPEED * tm;
+    if(this.waterPos >= 16)
+        this.waterPos -= 16;
+    // Update waves
+    this.wave += WAVE_SPEED*tm;
+    if(this.wave >= 2*Math.PI) 
+        this.wave -= 2*Math.PI;
 }
 
 
@@ -78,6 +121,8 @@ Stage.prototype.draw = function(cam, g) {
 
     // Use camera
     cam.use(g);
+    // Draw water
+    this.drawWater(cam, g);
     // Draw tilemap
     this.drawTilemap(cam, g);
 }

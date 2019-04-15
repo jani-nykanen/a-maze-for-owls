@@ -25,12 +25,19 @@ Game.prototype.onLoad = function(assets) {
 
     // Create stage
     this.stage = new Stage(assets.documents);
+    // Create player
+    this.player = new Player(192/2, 144/2);
 }
 
 
 // Update
 Game.prototype.update = function(evMan, tm) {
 
+    // Update camera
+    this.cam.update(tm, this.stage.tmap);
+
+    // Update player
+    this.player.update(this.cam, evMan, tm);
     // Update stage
     this.stage.update(tm);
 }
@@ -44,4 +51,6 @@ Game.prototype.draw = function(g) {
 
     // Draw stage
     this.stage.draw(this.cam, g);
+    // Draw player
+    this.player.draw(g);
 }

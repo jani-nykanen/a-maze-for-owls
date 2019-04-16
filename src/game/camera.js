@@ -37,15 +37,12 @@ Camera.prototype.move = function(dx, dy) {
 // Update
 Camera.prototype.update = function(tm,  tmap) {
 
+    // const DIV = 1;
+
     if(!this.moving)
         return;
 
-    // Update movement
-    let t = this.moveTimer / INITIAL_MOVE_TIME;
-    this.pos.x = (this.startPos.x*t + (1-t)*this.target.x) | 0;
-    this.pos.y = (this.startPos.y*t + (1-t)*this.target.y) | 0;
-
-    // Update timer
+        // Update timer
     this.moveTimer -= 1.0 * tm;
     if(this.moveTimer <= 0.0) {
 
@@ -53,14 +50,23 @@ Camera.prototype.update = function(tm,  tmap) {
         this.pos.x |= 0;
         this.pos.y |= 0;
         this.moving = false;
-
-        // Loop
-        if(tmap != null) {
-
-            this.pos.x = negMod(this.pos.x, tmap.width*16);
-            this.pos.y = negMod(this.pos.y, tmap.height*16);
-        }
     }
+    else {
+
+        // Update movement
+        let t = this.moveTimer / INITIAL_MOVE_TIME;
+        // t = ((t * DIV) | 0) / DIV;
+        this.pos.x = (this.startPos.x*t + (1-t)*this.target.x) | 0;
+        this.pos.y = (this.startPos.y*t + (1-t)*this.target.y) | 0;
+    }
+
+    // Loop
+    if(tmap != null) {
+
+        this.pos.x = negMod(this.pos.x, tmap.width*16);
+        this.pos.y = negMod(this.pos.y, tmap.height*16);
+    }
+    
 }
 
 

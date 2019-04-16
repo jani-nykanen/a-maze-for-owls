@@ -23,7 +23,8 @@ let main = function() {
         docPath: "assets/maps/",
         documents: {
 
-            map: "map.tmx"
+            map: "map.tmx",
+            collisions: "collisions.tmx",
         }
     }
 

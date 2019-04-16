@@ -13,11 +13,10 @@ let Player = function(x, y) {
 
     // Sprite
     this.spr = new AnimatedSprite(24, 24);
-    this.flip = Flip.None;
 
     // Hitbox
-    this.width = 16;
-    this.height = 16;
+    this.width = 4;
+    this.height = 12;
 }
 
 
@@ -62,7 +61,7 @@ Player.prototype.control = function(evMan, tm) {
 
     // "Jump"
     let s = evMan.vpad.buttons.fire1.state;
-    if(s == State.Pressed) {
+    if(this.canJump && s == State.Pressed) {
 
         this.speed.y = JUMP_HEIGHT;
     }
@@ -142,36 +141,113 @@ Player.prototype.updateCamera = function(cam, stage) {
 }
 
 
+// Animate
+Player.prototype.animate = function(tm) {
+
+    const WALK_BASE = 12;
+    const WALK_MOD = 6;
+    const JUMP_MOD = 0.25;
+    const EPS = 0.01;
+
+    // Jumping
+    if(!this.canJump) {
+
+        if(Math.abs(this.speed.y) < JUMP_MOD) {
+
+            this.spr.frame = 1;
+        }
+        else {
+
+            this.spr.frame = this.speed.y < 0 ? 0 : 2;
+        }
+        this.spr.row = 1;
+    }
+    else {
+
+        // Standing
+        if(Math.abs(this.speed.x) < EPS) {
+
+            this.spr.frame = 0;
+            this.spr.row = 0;
+        }
+        // Walking
+        else {
+
+            let begin = this.speed.x > 0 ? 1 : 3;
+            let speed = (WALK_BASE - (Math.abs(this.speed.x))*WALK_MOD) | 0;
+            this.spr.animate(0, begin, begin+1, speed, tm);
+        }
+    }
+}
+
+
 // Update
 Player.prototype.update = function(cam, evMan, tm) {
-
-    const EPS = 0.1;
-
-    // TEMPORARY
-    // Move camera
-    /*
-    let stick = evMan.vpad.stick;
-
-    let dx = 0;
-    let dy = 0;
-    if(Math.abs(stick.x) > EPS) {
-
-        dx = stick.x > 0 ? 1 : -1;
-    }
-    else if(Math.abs(stick.y) > EPS) {
-
-        dy = stick.y > 0 ? 1 : -1;
-    }
-    if(dx != 0 || dy != 0) {
-
-        cam.move(dx, dy);
-    }
-    */
 
     // Control
     this.control(evMan, tm);
     // Move
     this.move(evMan, tm);
+    // Animate
+    this.animate(tm);
+
+    this.canJump = false;
+}
+
+
+// Get a floor collision
+Player.prototype.floorCollision = function(x, y, w, tm) {
+
+    const COL_OFF_TOP = -0.5;
+    const COL_OFF_BOTTOM = 1.0;
+
+    if(this.speed.y < 0.0)
+        return;
+
+    // Check if inside the horizontal area
+    if(!(this.pos.x+this.width/2 >= x && 
+        this.pos.x-this.width/2 < x+w))
+        return;
+
+    // Vertical collision
+    if(this.pos.y >= y+COL_OFF_TOP*tm && 
+       this.pos.y <= y+(COL_OFF_BOTTOM+this.speed.y)*tm) {
+
+         this.pos.y = y;
+         this.speed.y = 0.0;
+         this.canJump = true;
+    }
+}
+
+
+// Get a ceiling collision
+Player.prototype.ceilingCollision = function(x, y, w, tm) {
+
+    const COL_OFF_TOP = -1.0;
+    const COL_OFF_BOTTOM = 0.5;
+
+    if(this.speed.y > 0.0)
+        return;
+
+    // Check if inside the horizontal area
+    if(!(this.pos.x+this.width/2 >= x && 
+        this.pos.x-this.width/2 < x+w))
+        return;
+
+    // Vertical collision
+    if(this.pos.y-this.height <= y+COL_OFF_BOTTOM*tm && 
+       this.pos.y-this.height >= y+(COL_OFF_TOP+this.speed.y)*tm) {
+
+         this.pos.y = y+this.height;
+         this.speed.y = 0.0;
+    }
+}
+
+
+// Get a wall collision
+Player.prototype.wallCollision = function(dir, x, y, h, tm) {
+
+    
 }
 
 
@@ -180,6 +256,9 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
 
     // Check camera
     this.updateCamera(cam, stage);
+
+    // Stage collisions
+    stage.playerCollision(this, tm);
 }
 
 
@@ -188,5 +267,5 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
 Player.prototype.draw = function(g) {
 
     // Draw sprite
-    this.spr.draw(g, g.bitmaps.owl, this.pos.x-12, this.pos.y-20, this.flip);
+    this.spr.draw(g, g.bitmaps.owl, this.pos.x-12, this.pos.y-20);
 }

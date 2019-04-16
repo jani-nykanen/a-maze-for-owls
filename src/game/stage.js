@@ -12,6 +12,20 @@ let Stage = function(docs) {
 
     // Create tilemap
     this.tmap = new Tilemap(docs.map);
+    // Create collision map
+    this.collisions = new Tilemap(docs.collisions);
+}
+
+
+// Check solid state
+Stage.prototype.checkSolid = function(x, y) {
+    
+    let t = this.tmap.getTile(0, x, y);
+    -- t;
+    let dx = (t % 16) | 0;
+    let dy = (t/16) | 0;
+
+    return this.collisions.getTile(0, dx, dy);
 }
 
 
@@ -127,3 +141,39 @@ Stage.prototype.draw = function(cam, g) {
     this.drawTilemap(cam, g);
 }
 
+
+// Get player collisions
+Stage.prototype.playerCollision = function(pl, tm) {
+
+    let sx = ((pl.pos.x/16) | 0) - 2;
+    let sy = ((pl.pos.y/16) | 0) - 2;
+    let ex = sx + 5;
+    let ey = sy + 5;
+
+    // Go though tiles and find solid
+    // tiles
+    let s;
+    for(let y = sy; y <= ey; ++ y) {
+
+        for(let x = sx; x <= ex; ++ x) {
+            
+            s = this.checkSolid(x, y);
+            if(s <= 0) continue;
+
+            if(s == 1) {
+
+                // Floor collision
+                if(this.checkSolid(x, y-1) != 1) {
+
+                    pl.floorCollision(x*16, y*16, 16, tm);
+                }
+                // Ceiling collision
+                // Floor collision
+                if(this.checkSolid(x, y+1) != 1) {
+
+                    pl.ceilingCollision(x*16, (y+1)*16, 16, tm);
+                }
+            }
+        }
+    }
+}

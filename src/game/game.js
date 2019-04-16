@@ -47,6 +47,11 @@ Game.prototype.update = function(evMan, tm) {
         // Update stage
         this.stage.update(tm);
     }
+    // Specific behavior if camera moving
+    else {
+
+        this.player.moveCameraActive(this.stage, tm);
+    }
 }
 
 
@@ -59,11 +64,6 @@ Game.prototype.draw = function(g) {
     // Draw stage
     this.stage.draw(this.cam, g);
 
-    // Draw objects if camera not
-    // moving
-    if(!this.cam.moving) {
-
-        // Draw player
-        this.player.draw(g);
-    }
+    // Draw player
+    this.player.draw(g, this.stage, this.cam);
 }

@@ -14,6 +14,13 @@ let Stage = function(docs) {
     this.tmap = new Tilemap(docs.map);
     // Create collision map
     this.collisions = new Tilemap(docs.collisions);
+
+    // Dimensions
+    this.width = this.tmap.width*16;
+    this.height = this.tmap.height*16;
+
+    // Water surface position
+    this.surfY = this.tmap.height*16 - 144 - 16;;
 }
 
 
@@ -35,8 +42,7 @@ Stage.prototype.drawWater = function(cam, g) {
     const WAVE_AMPL = 2;
 
     // Draw surface
-    let surfY = this.tmap.height*16 - 144 - 16;
-    if(cam.pos.y+144 >= surfY && cam.pos.y <= surfY+16) {
+    if(cam.pos.y+144 >= this.surfY && cam.pos.y <= this.surfY+16) {
 
         let startx = ((cam.pos.x/16) | 0) -1;   
         let ex = startx + (192/16) + 2;
@@ -46,14 +52,14 @@ Stage.prototype.drawWater = function(cam, g) {
         for(let x = startx; x <= ex; ++ x) {
 
             g.drawBitmapRegion(g.bitmaps.tileset, 0, 48, 16, 16,
-                x*16 - this.waterPos, surfY+yplus);
+                x*16 - this.waterPos, this.surfY+yplus);
         }
     }
 
     // Draw black background
-    if(cam.pos.y+144 >= surfY+16) {
+    if(cam.pos.y+144 >= this.surfY+16) {
 
-        g.fillRect(cam.pos.x, surfY+16, 192, 144,
+        g.fillRect(cam.pos.x, this.surfY+16, 192, 144,
             {r: 0, g: 0, b: 0});
     }
 }

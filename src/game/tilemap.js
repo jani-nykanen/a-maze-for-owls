@@ -8,7 +8,7 @@ let negMod = (m, n) => {
 
     if(m < 0) {
 
-        return n - (-m % n) -1;
+        return n - (-m % n);
     }
     return m % n;
 }

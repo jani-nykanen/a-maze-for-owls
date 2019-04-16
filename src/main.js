@@ -15,7 +15,8 @@ let main = function() {
             background: "background.png",
             clouds: "clouds.png",
             tileset: "tileset.png",
-            trees: "trees.png"
+            trees: "trees.png",
+            owl: "owl.png",
         },
 
         // Documents
@@ -29,7 +30,10 @@ let main = function() {
     // Gamepad config
     let gamepadConfig = {
 
-        // Fill this
+        buttons: {
+
+            fire1: 90,
+        }
     }
     // Derired framerate
     let framerate = 30;

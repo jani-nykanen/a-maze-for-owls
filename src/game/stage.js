@@ -160,18 +160,32 @@ Stage.prototype.playerCollision = function(pl, tm) {
             s = this.checkSolid(x, y);
             if(s <= 0) continue;
 
-            if(s == 1) {
+            if(s == 1 || s == 2) {
 
                 // Floor collision
-                if(this.checkSolid(x, y-1) != 1) {
+                if(s == 2 || this.checkSolid(x, y-1) != 1) {
 
                     pl.floorCollision(x*16, y*16, 16, tm);
                 }
-                // Ceiling collision
-                // Floor collision
-                if(this.checkSolid(x, y+1) != 1) {
 
-                    pl.ceilingCollision(x*16, (y+1)*16, 16, tm);
+                // Other collision, not for type 2 colliders
+                if(s == 1) {
+
+                    // Ceiling collision
+                    if(this.checkSolid(x, y+1) != 1) {
+
+                        pl.ceilingCollision(x*16, (y+1)*16, 16, tm);
+                    }
+                    // Wall collision, right
+                    if(this.checkSolid(x-1, y) != 1) {
+
+                        pl.wallCollision(1, x*16, y*16, 16, tm);
+                    }
+                    // Wall collision, left
+                    if(this.checkSolid(x+1, y) != 1) {
+
+                        pl.wallCollision(-1, (x+1)*16, y*16, 16, tm);
+                    }
                 }
             }
         }

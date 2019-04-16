@@ -26,7 +26,7 @@ Game.prototype.onLoad = function(assets) {
     // Create stage
     this.stage = new Stage(assets.documents);
     // Create player
-    this.player = new Player(192/2, 144/2);
+    this.player = new Player(192/2-8, 144/2 - 8);
 }
 
 

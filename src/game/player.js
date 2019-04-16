@@ -247,7 +247,28 @@ Player.prototype.ceilingCollision = function(x, y, w, tm) {
 // Get a wall collision
 Player.prototype.wallCollision = function(dir, x, y, h, tm) {
 
-    
+    const COL_OFF_NEAR = 0.5;
+    const COL_OFF_FAR = 1.0;
+
+    if(this.speed.x*dir < 0.0)
+        return;
+
+    // Check if inside the collision area vertically
+    if(this.pos.y <= y || this.pos.y-this.height >= y+h) {
+        return;
+    }
+
+    // Horizontal collision
+    if((dir == 1 && 
+        this.pos.x+this.width/2 >= x - COL_OFF_NEAR*tm && 
+        this.pos.x+this.width/2  <= x+(COL_OFF_FAR+this.speed.x)*tm) ||
+       (dir == -1 && 
+        this.pos.x-this.width/2  <= x + COL_OFF_NEAR*tm && 
+        this.pos.x-this.width/2  >= x-(COL_OFF_FAR-this.speed.x)*tm)) {
+        
+        this.speed.x = 0;
+        this.pos.x = x - this.width/2 * dir;
+    }
 }
 
 
@@ -267,5 +288,5 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
 Player.prototype.draw = function(g) {
 
     // Draw sprite
-    this.spr.draw(g, g.bitmaps.owl, this.pos.x-12, this.pos.y-20);
+    this.spr.draw(g, g.bitmaps.owl, this.pos.x-12, this.pos.y-20 +1);
 }

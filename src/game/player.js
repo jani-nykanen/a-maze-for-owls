@@ -2,11 +2,16 @@
 // (c) 2019 Jani Nykänen
 
 
+// Constants
+const PL_MOVE_DELTA = 8;
+
+
 // Constructor
 let Player = function(x, y) {
 
     // Position & speed
     this.pos = new Vec2(x, y);
+    this.startPos = this.pos.copy();
     this.speed = new Vec2(0, 0);
     this.target = this.speed.copy();
     this.moveDir = {x: 0, y: 0};
@@ -135,7 +140,6 @@ Player.prototype.updateCamera = function(cam, stage) {
         cam.move(-1, 0);
         this.moveDir.x = -1;
 
-        // this.pos.x -= this.width;
         if(this.pos.x < 0) {
 
             this.pos.x += stage.tmap.width*16;
@@ -148,7 +152,6 @@ Player.prototype.updateCamera = function(cam, stage) {
         cam.move(1, 0);
         this.moveDir.x = 1;
 
-       // this.pos.x += this.width;
         if(this.pos.x > stage.tmap.width*16) {
 
             this.pos.x -= stage.tmap.width*16;
@@ -162,7 +165,6 @@ Player.prototype.updateCamera = function(cam, stage) {
         cam.move(0, -1);
         this.moveDir.y = -1;
 
-        //this.pos.y -= this.height;
         if(this.pos.y < 0) {
 
             this.pos.y += stage.tmap.height*16;
@@ -175,11 +177,18 @@ Player.prototype.updateCamera = function(cam, stage) {
         cam.move(0, 1);
         this.moveDir.y = 1;
 
-        //this.pos.y += this.height;
         if(this.pos.y > stage.tmap.height*16) {
 
             this.pos.y -= stage.tmap.height*16;
         }
+    }
+
+    // Store starting position
+    if(cam.moving) {
+
+        this.startPos = this.pos.copy();
+        this.startPos.x += PL_MOVE_DELTA * this.moveDir.x;
+        this.startPos.y += PL_MOVE_DELTA * this.moveDir.y;
     }
 }
 
@@ -235,9 +244,7 @@ Player.prototype.animate = function(tm) {
 // Move while camera is moving
 Player.prototype.moveCameraActive = function(stage, tm) {
 
-    const MOVE_DELTA = 8;
-
-    let delta = MOVE_DELTA/INITIAL_MOVE_TIME;
+    let delta = PL_MOVE_DELTA/INITIAL_MOVE_TIME;
 
     this.pos.x += this.moveDir.x * delta * tm;
     this.pos.y += this.moveDir.y * delta * tm;
@@ -337,6 +344,17 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
         
         this.speed.x = 0;
         this.pos.x = x - this.width/2 * dir;
+    }
+}
+
+
+// Hurt collision
+Player.prototype.hurtCollision = function(x, y, w, h) {
+
+    if(this.pos.x+this.width/2 >= x && this.pos.x-this.width/2 <= x+w &&
+       this.pos.y >= y && this.pos.y-this.height <= y+h ) {
+
+        this.pos = this.startPos.copy();
     }
 }
 

@@ -9,7 +9,7 @@ let main = function() {
     let assetContent = {
 
         // Bitmaps
-        bitmapPath: "assets/bitmaps/",
+        bitmapPath: "assets/bitmaps",
         bitmaps: {
 
             background: "background.png",
@@ -20,7 +20,7 @@ let main = function() {
         },
 
         // Documents
-        docPath: "assets/maps/",
+        docPath: "assets/maps",
         documents: {
 
             map: "map.tmx",

@@ -194,6 +194,11 @@ Stage.prototype.playerCollision = function(pl, tm) {
                     }
                 }
             }
+            // Hurt collision
+            else if(s == 3) {
+
+                pl.hurtCollision(x*16, y*16, 16, 16);
+            }
         }
     }
 }

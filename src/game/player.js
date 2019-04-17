@@ -30,6 +30,7 @@ let Player = function(x, y) {
     // Thwomp
     this.thwomping = false;
     this.thwompTimer = 0;
+    this.stopped = false;
 
     // Is dying
     this.dying = false;
@@ -355,6 +356,7 @@ Player.prototype.updateDeath = function(tm) {
         this.thwompTimer = 0;
         this.swimming = false;
         this.floating = false;
+        this.stopped = false;
         this.speed.x = 0;
         this.speed.y = 0;
 
@@ -412,8 +414,11 @@ Player.prototype.update = function(cam, evMan, tm) {
         if(this.thwompTimer <= 0.0) {
 
             this.thwomping = false;
+            this.stopped = false;
         }
     }
+    if(this.stopped)
+        return;
 
     // Control
     this.control(evMan, tm);
@@ -434,12 +439,12 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
     const COL_OFF_BOTTOM = 1.0;
 
     if(this.dying || this.speed.y < 0.0)
-        return;
+        return false;
 
     // Check if inside the horizontal area
     if(!(this.pos.x+this.width/2 >= x && 
         this.pos.x-this.width/2 < x+w))
-        return;
+        return false;
 
     // Vertical collision
     if(this.pos.y >= y+COL_OFF_TOP*tm && 
@@ -450,13 +455,20 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
          this.canJump = true;
          this.doubleJump = true;
 
+         if(this.thwomping)
+            this.stopped = true;
+
          // Set starting position
          if(!this.startPosSet) {
 
             this.startPos = this.pos.copy();
             this.startPosSet = true;
          }
+
+         return true;
     }
+
+    return false;
 }
 
 

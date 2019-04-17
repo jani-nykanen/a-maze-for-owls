@@ -2,8 +2,53 @@
 // (c) 2019 Jani Nykänen
 
 
+// A dying brick
+let DyingBrick = function() {
+
+    this.exist = false;
+    this.spr = new AnimatedSprite(16, 16);
+    this.pos = new Vec2();
+}
+
+
+// Create a dying brick
+DyingBrick.prototype.createSelf = function(x, y) {
+
+    this.exist = true;
+    this.pos.x = x;
+    this.pos.y = y;
+    this.spr.frame = 15-4;
+    this.spr.row = 7;
+    this.count = 0;
+}
+
+
+// Update a dying brick
+DyingBrick.prototype.update = function(tm) {
+
+    const ANIM_SPEED = 6;
+
+    if(!this.exist) return;
+    this.spr.animate(7, 15-4, 16, ANIM_SPEED, tm);
+    if(this.spr.frame == 16) {
+
+        this.exist = false;
+    }
+}
+
+
+// Draw a dying brick
+DyingBrick.prototype.draw = function(g) {
+
+    if(!this.exist) return;
+    this.spr.draw(g, g.bitmaps.tileset, this.pos.x, this.pos.y);
+}
+
+
 // Constructor
 let Stage = function(docs) {
+
+    const DYING_BRICK_COUNT = 4;
 
     // Set defaults
     this.cloudPos = 0;
@@ -20,7 +65,14 @@ let Stage = function(docs) {
     this.height = this.tmap.height*16;
 
     // Water surface position
-    this.surfY = this.tmap.height*16 - 144 - 16;;
+    this.surfY = this.tmap.height*16 - 144 - 16;
+
+    // Initialize dying bricks
+    this.bricks = new Array(DYING_BRICK_COUNT);
+    for(let i = 0; i < this.bricks.length; ++ i) {
+
+        this.bricks[i] = new DyingBrick();
+    }
 }
 
 
@@ -98,6 +150,26 @@ Stage.prototype.drawTilemap = function(cam, g) {
 }
 
 
+// Create a dying brick
+Stage.prototype.createDyingBrick = function(x, y) {
+
+    // Find a brick that is not active
+    let b = null;
+    for(let i = 0; i < this.bricks.length; ++ i) {
+
+        if(!this.bricks[i].exist) {
+
+            b = this.bricks[i];
+            break;
+        }
+    }
+    if(b == null) return;
+
+    // Create brick
+    b.createSelf(x, y);
+}
+
+
 // Update stage
 Stage.prototype.update = function(tm) {
 
@@ -118,6 +190,12 @@ Stage.prototype.update = function(tm) {
     this.wave += WAVE_SPEED*tm;
     if(this.wave >= 2*Math.PI) 
         this.wave -= 2*Math.PI;
+
+    // Update dying bricks
+    for(let i = 0; i < this.bricks.length; ++ i) {
+
+        this.bricks[i].update(tm);
+    }
 }
 
 
@@ -145,6 +223,12 @@ Stage.prototype.draw = function(cam, g) {
     this.drawWater(cam, g);
     // Draw tilemap
     this.drawTilemap(cam, g);
+
+    // Draw dying bricks
+    for(let i = 0; i < this.bricks.length; ++ i) {
+
+        this.bricks[i].draw(g);
+    }
 }
 
 
@@ -168,29 +252,37 @@ Stage.prototype.playerCollision = function(pl, tm) {
             s = this.checkSolid(x, y);
             if(s <= 0) continue;
 
-            if(s == 1 || s == 2) {
+            if(s == 1 || s == 2 || s == 4) {
 
                 // Floor collision
-                if(s == 2 || this.checkSolid(x, y-1) != 1) {
+                if(s == 2 || this.checkSolid(x, y-1) != s) {
 
-                    pl.floorCollision(x*16, y*16, 16, tm);
+                    if(pl.floorCollision(x*16, y*16, 16, tm) &&
+                       pl.thwomping && 
+                       s == 4) {
+
+                        // Remove tile
+                        this.tmap.setTile(0, 0, x, y);
+                        // Create a dying brick
+                        this.createDyingBrick(x*16, y*16);
+                    }
                 }
 
                 // Other collision, not for type 2 colliders
-                if(s == 1) {
+                if(s != 2) {
 
                     // Ceiling collision
-                    if(this.checkSolid(x, y+1) != 1) {
+                    if(this.checkSolid(x, y+1) != s) {
 
                         pl.ceilingCollision(x*16, (y+1)*16, 16, tm);
                     }
                     // Wall collision, right
-                    if(this.checkSolid(x-1, y) != 1) {
+                    if(this.checkSolid(x-1, y) != s) {
 
                         pl.wallCollision(1, x*16, y*16, 16, tm);
                     }
                     // Wall collision, left
-                    if(this.checkSolid(x+1, y) != 1) {
+                    if(this.checkSolid(x+1, y) != s) {
 
                         pl.wallCollision(-1, (x+1)*16, y*16, 16, tm);
                     }

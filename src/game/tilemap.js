@@ -66,3 +66,17 @@ Tilemap.prototype.getTile = function(layer, x, y, loop) {
 
     return this.layers[layer][y*this.width+x];
 }
+
+
+// Set tile
+Tilemap.prototype.setTile = function(t, layer, x, y) {
+
+    // Integer positions only
+    x |= 0;
+    y |= 0;
+
+    if(x < 0 || y < 0 || x >= this.width || y >= this.height)
+        return;
+
+    this.layers[layer][y*this.width+x] = t;
+}

@@ -4,6 +4,7 @@
 
 // Constants
 const PL_MOVE_DELTA = 8;
+const PL_THWOMP_WAIT = 30;
 
 
 // Constructor
@@ -23,6 +24,10 @@ let Player = function(x, y) {
     // Is swimming
     this.swimming = false;
     this.oldSwimState = false;
+
+    // Thwomp
+    this.thwomping = false;
+    this.thwompTimer = 0;
 
     // Sprite
     this.spr = new AnimatedSprite(24, 24);
@@ -64,18 +69,30 @@ Player.prototype.control = function(evMan, tm) {
     const MOVE_TARGET = 0.75;
     const GRAVITY_TARGET = 1.25;
     const WATER_GRAVITY = 0.5;
+    const THWOMP_GRAVITY = 4.0;
     const JUMP_HEIGHT = -2.0;
     const DOUBLE_JUMP_HEIGHT = -1.75;
     const SWIM_SPEED = -1.25;
+    const THWOMP_JUMP = -1.5;
+    const THWOMP_DELTA = 0.1;
 
     let stick = evMan.vpad.stick;
 
+    // Set gravity target
+    if(this.thwomping)
+        this.target.y = THWOMP_GRAVITY;
+    else if(this.swimming)
+        this.target.y = WATER_GRAVITY;
+    else
+        this.target.y = GRAVITY_TARGET;
+
+    // Stop here if thwomping
+    if(this.thwomping) return;
+
     // Set horizontal target
     this.target.x = stick.x * MOVE_TARGET;
-    // Set gravity target
-    this.target.y = this.swimming ? WATER_GRAVITY :  GRAVITY_TARGET;
 
-    // "Jump"
+    // Jumps
     let s = evMan.vpad.buttons.fire1.state;
     if(this.swimming) {
 
@@ -90,15 +107,27 @@ Player.prototype.control = function(evMan, tm) {
         this.speed.y =  JUMP_HEIGHT;
         this.doubleJump = true;
     }
-    // Land jumps
     else {
 
-        if( (this.doubleJump || this.canJump) && s == State.Pressed) {
+        if(s == State.Pressed) {
 
-            this.speed.y = this.canJump ? JUMP_HEIGHT : DOUBLE_JUMP_HEIGHT;
-            if(!this.canJump)
-                this.doubleJump = false;
+            // Thwomp
+            if(!this.canJump && stick.y > THWOMP_DELTA) {
+
+                this.thwomping = true;
+                this.thwompTimer = PL_THWOMP_WAIT;
+                this.speed.y = THWOMP_JUMP;
+            }
+            // Normal & double jump
+            else if( (this.doubleJump || this.canJump) && s == State.Pressed) {
+
+                this.speed.y = this.canJump ? JUMP_HEIGHT : DOUBLE_JUMP_HEIGHT;
+                if(!this.canJump)
+                    this.doubleJump = false;
+            }
+        
         }
+        // Release jump   
         else if(s == State.Released && this.speed.y < 0.0) {
 
             this.speed.y /= 2.0;
@@ -113,11 +142,17 @@ Player.prototype.move = function(evMan, tm) {
     const ACC_X = 0.05;
     const ACC_Y = 0.05;
     const SWIM_ACC_Y = 0.033;
+    const THWOMP_ACC_Y = 0.2;
+
+    let grav = ACC_Y;
+    if(this.thwomping)
+        grav = THWOMP_ACC_Y;
+    else if(this.swimming)
+        grav = SWIM_ACC_Y;
 
     // Update speeds
     this.speed.x = this.updateSpeed(this.speed.x, this.target.x, ACC_X, tm);
-    this.speed.y = this.updateSpeed(this.speed.y, this.target.y, 
-        this.swimming ? SWIM_ACC_Y : ACC_Y, tm);
+    this.speed.y = this.updateSpeed(this.speed.y, this.target.y, grav, tm);
 
     // Move
     this.pos.x += this.speed.x * tm;
@@ -202,8 +237,14 @@ Player.prototype.animate = function(tm) {
     const FLAP_SPEED = 2;
     const EPS = 0.01;
 
+    // "Thwomp"
+    if(this.thwomping) {
+
+        this.spr.frame = 3;
+        this.spr.row = 1;
+    }
     // Jumping
-    if(!this.canJump) {
+    else if(!this.canJump) {
 
         if( (this.swimming || !this.doubleJump) && this.speed.y < 0.0) {
 
@@ -257,6 +298,21 @@ Player.prototype.moveCameraActive = function(stage, tm) {
 
 // Update
 Player.prototype.update = function(cam, evMan, tm) {
+
+    const THWOMP_SHAKE = 4;
+
+    // Update thwomp
+    cam.shake = 0;
+    if(this.canJump && this.thwomping) {
+
+        this.thwompTimer -= 1.0 * tm;
+        cam.shake = THWOMP_SHAKE;
+
+        if(this.thwompTimer <= 0.0) {
+
+            this.thwomping = false;
+        }
+    }
 
     // Control
     this.control(evMan, tm);

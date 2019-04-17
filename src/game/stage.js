@@ -151,6 +151,8 @@ Stage.prototype.draw = function(cam, g) {
 // Get player collisions
 Stage.prototype.playerCollision = function(pl, tm) {
 
+    const HURT_OFF = 8;
+
     let sx = ((pl.pos.x/16) | 0) - 2;
     let sy = ((pl.pos.y/16) | 0) - 2;
     let ex = sx + 5;
@@ -195,9 +197,38 @@ Stage.prototype.playerCollision = function(pl, tm) {
                 }
             }
             // Hurt collision
-            else if(s == 3) {
+            else if(s == 3) {   
 
-                pl.hurtCollision(x*16, y*16, 16, 16);
+                let dx = x*16;
+                let dy = y*16;
+                let dw = 16;
+                let dh = 16;
+
+                // Modify hitbox
+                let t = this.tmap.getTile(0, x, y) -1;
+                t -= 8 + 6*16;
+                t %= 4;
+                if(t == 0) {
+
+                    dy += HURT_OFF;
+                    dh -= HURT_OFF;
+                }
+                if(t == 2) {
+
+                    dh -= HURT_OFF;
+                }
+                if(t == 3) {
+
+                    dx += HURT_OFF;
+                    dw -= HURT_OFF;
+                }
+                if(t == 1) {
+
+                    dw -= HURT_OFF;
+                }
+                
+
+                pl.hurtCollision(dx, dy, dw, dh);
             }
         }
     }

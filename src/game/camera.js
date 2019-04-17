@@ -16,6 +16,9 @@ let Camera = function(x, y) {
     this.moveTimer = 0;
     // Is moving
     this.moving = false;
+
+    // Shake
+    this.shake = 0;
 }
 
 
@@ -73,5 +76,13 @@ Camera.prototype.update = function(tm,  tmap) {
 // Use camera
 Camera.prototype.use = function(g) {
 
-    g.translate(-this.pos.x, -this.pos.y);
+    let dx = 0;
+    let dy = 0;
+    if(this.shake > 0) {
+
+        dx = ( (Math.random()-0.5)*2 * this.shake) | 0;
+        dy = ( (Math.random()-0.5)*2 * this.shake) | 0;
+    }
+
+    g.translate(-this.pos.x + dx, -this.pos.y + dy);
 }

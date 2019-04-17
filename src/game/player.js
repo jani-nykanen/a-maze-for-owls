@@ -52,7 +52,7 @@ let Player = function(x, y) {
         true, // Float
         true, // Swim
         true, // Thwomp
-        true, // Dig
+        false, // Dig
     ];
 }
 

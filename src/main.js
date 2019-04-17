@@ -17,6 +17,7 @@ let main = function() {
             tileset: "tileset.png",
             trees: "trees.png",
             owl: "owl.png",
+            disc: "disc.png",
         },
 
         // Documents

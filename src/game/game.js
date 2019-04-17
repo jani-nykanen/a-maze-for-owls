@@ -6,17 +6,18 @@
 let Game = function() {
 
     this.name = "game";
-
-    // Create components that do not
-    // require assets
-    this.cam = new Camera(0, 0);
 }
 
 
 // Initialize
 Game.prototype.init = function(evMan) {
 
-    // Implement
+    // Create components that do not
+    // require assets
+    this.cam = new Camera(0, 0);
+
+    // Initialize arrays
+    this.discs = [];
 }
 
 
@@ -25,8 +26,8 @@ Game.prototype.onLoad = function(assets) {
 
     // Create stage
     this.stage = new Stage(assets.documents);
-    // Create player
-    this.player = new Player(192/2-8, 144/2 - 8);
+    // Parse stage
+    this.stage.parseObjects(this);
 }
 
 
@@ -35,7 +36,6 @@ Game.prototype.update = function(evMan, tm) {
 
     // Update camera
     this.cam.update(tm, this.stage.tmap);
-
 
     // No collision etc if camera moving
     if(!this.cam.moving) {
@@ -46,6 +46,13 @@ Game.prototype.update = function(evMan, tm) {
         this.player.stageCollision(this.stage, this.cam, tm);
         // Update stage
         this.stage.update(tm);
+
+        // Update discs
+        for(let i = 0; i < this.discs.length; ++ i) {
+
+            this.discs[i].update(tm);
+            this.discs[i].playerCollision(this.player);
+        }
     }
     // Specific behavior if camera moving
     else {
@@ -63,6 +70,12 @@ Game.prototype.draw = function(g) {
 
     // Draw stage
     this.stage.draw(this.cam, g);
+
+     // Draw discs
+    for(let i = 0; i < this.discs.length; ++ i) {
+
+        this.discs[i].draw(g);
+    }
 
     // Draw player
     this.player.draw(g, this.stage, this.cam);

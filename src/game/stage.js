@@ -335,3 +335,37 @@ Stage.prototype.playerCollision = function(pl, tm) {
         }
     }
 }
+
+
+// Parse map for objects
+Stage.prototype.parseObjects = function(game) {
+
+    let t;
+    for(let y = 0; y < this.tmap.height; ++ y) {
+
+        for(let x = 0; x < this.tmap.width; ++ x) {
+
+            t = this.tmap.getTile(1, x, y)-128;
+            if(t <= 0)
+                continue;
+                
+            if(t < 9) {
+                switch(t) {
+
+                // Player
+                case 1:
+                    game.player = new Player(x*16+8, (y+1)*16);
+                    break;  
+
+                default:
+                    break;
+                };
+            }
+            // Disc
+            else {
+
+                game.discs.push(new Disc(x*16, y*16, t-9));
+            }
+        }
+    }
+}

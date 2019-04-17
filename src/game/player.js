@@ -43,6 +43,17 @@ let Player = function(x, y) {
     // Hitbox
     this.width = 4;
     this.height = 12;
+
+    // Skills
+    this.skills = [
+        true, // Walk
+        true, // Jump,
+        true, // Double jump
+        true, // Float
+        true, // Swim
+        true, // Thwomp
+        true, // Dig
+    ];
 }
 
 
@@ -503,11 +514,11 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
     const COL_OFF_FAR = 1.0;
 
     if(this.dying || this.speed.x*dir < 0.0)
-        return;
+        return false;
 
     // Check if inside the collision area vertically
     if(this.pos.y <= y || this.pos.y-this.height >= y+h) {
-        return;
+        return false;
     }
 
     // Horizontal collision
@@ -520,7 +531,10 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
         
         this.speed.x = 0;
         this.pos.x = x - this.width/2 * dir;
+
+        return true;
     }
+    return false;
 }
 
 

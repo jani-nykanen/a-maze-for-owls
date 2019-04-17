@@ -277,14 +277,24 @@ Stage.prototype.playerCollision = function(pl, tm) {
                         pl.ceilingCollision(x*16, (y+1)*16, 16, tm);
                     }
                     // Wall collision, right
+                    let collided = false;
                     if(this.checkSolid(x-1, y) != s) {
 
-                        pl.wallCollision(1, x*16, y*16, 16, tm);
+                        collided = pl.wallCollision(1, x*16, y*16, 16, tm);
                     }
                     // Wall collision, left
                     if(this.checkSolid(x+1, y) != s) {
 
-                        pl.wallCollision(-1, (x+1)*16, y*16, 16, tm);
+                        collided = collided || 
+                            pl.wallCollision(-1, (x+1)*16, y*16, 16, tm);
+                    }
+
+                    if(collided && s == 4 && pl.skills[6]) {
+
+                        // Remove tile
+                        this.tmap.setTile(0, 0, x, y);
+                        // Create a dying brick
+                        this.createDyingBrick(x*16, y*16);
                     }
                 }
             }

@@ -14,11 +14,11 @@ Game.prototype.init = function(evMan) {
 
     // Create components that do not
     // require assets
-    this.cam = new Camera(0, 0);
     this.msg = new Message();
 
     // Initialize arrays
     this.discs = [];
+    this.feathers = [];
 }
 
 
@@ -29,6 +29,12 @@ Game.prototype.onLoad = function(assets) {
     this.stage = new Stage(assets.documents);
     // Parse stage
     this.stage.parseObjects(this);
+
+    // Set camera
+    this.cam = new Camera(
+        ((this.player.x/192) | 0) * 192, 
+        ((this.player.y/144) | 0) * 144
+    );
 }
 
 
@@ -61,6 +67,13 @@ Game.prototype.update = function(evMan, tm) {
             this.discs[i].update(tm);
             this.discs[i].playerCollision(this.player, this.msg);
         }
+
+        // Update feathers
+        for(let i = 0; i < this.feathers.length; ++ i) {
+
+            this.feathers[i].update(tm);
+            this.feathers[i].playerCollision(this.player);
+        }
     }
     // Specific behavior if camera moving
     else {
@@ -82,7 +95,13 @@ Game.prototype.draw = function(g) {
      // Draw discs
     for(let i = 0; i < this.discs.length; ++ i) {
 
-        this.discs[i].draw(g);
+        this.discs[i].draw(g, this.stage, this.cam);
+    }
+
+    // Draw feathers
+    for(let i = 0; i < this.feathers.length; ++ i) {
+
+        this.feathers[i].draw(g, this.stage, this.cam);
     }
 
     // Draw player

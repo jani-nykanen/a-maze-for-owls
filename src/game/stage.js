@@ -357,6 +357,12 @@ Stage.prototype.parseObjects = function(game) {
                     game.player = new Player(x*16+8, (y+1)*16);
                     break;  
 
+                // Feather
+                case 2:
+                    game.feathers.push(new Feather(x*16, y*16));
+                    break;  
+
+
                 default:
                     break;
                 };

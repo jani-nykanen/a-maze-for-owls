@@ -41,6 +41,7 @@ Camera.prototype.move = function(dx, dy) {
 Camera.prototype.update = function(tm,  tmap) {
 
     // const DIV = 1;
+    const DELTA = 16;
 
     if(!this.moving)
         return;

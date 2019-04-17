@@ -19,6 +19,7 @@ let main = function() {
             owl: "owl.png",
             disc: "disc.png",
             font: "font.png",
+            feather: "feather.png",
         },
 
         // Documents

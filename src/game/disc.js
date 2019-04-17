@@ -50,10 +50,17 @@ Disc.prototype.playerCollision = function(pl, msg) {
 
 
 // Draw
-Disc.prototype.draw = function(g) {
+Disc.prototype.draw = function(g, stage, cam) {
 
     if(!this.exist) return;
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.disc, this.pos.x, this.pos.y);
+
+    if(cam.moving) {
+
+        this.spr.draw(g, g.bitmaps.disc, 
+            this.pos.x + Stage.width, 
+            this.pos.y);
+    }
 }

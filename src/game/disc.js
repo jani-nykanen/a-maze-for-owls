@@ -25,7 +25,7 @@ Disc.prototype.update = function(tm) {
 
 
 // Player collision
-Disc.prototype.playerCollision = function(pl) {
+Disc.prototype.playerCollision = function(pl, msg) {
 
     if(!this.exist || pl.dying) return;
     
@@ -37,7 +37,8 @@ Disc.prototype.playerCollision = function(pl) {
     if(pl.pos.x+pl.width/2 >= x && pl.pos.x-pl.width/2 <= x+w &&
         pl.pos.y >= y && pl.pos.y-pl.height <= y+h ) {
 
-        console.log("Learned skill " + String(this.id) + "!");
+        // Create message
+        msg.createSelf("LEARNED SKILL\n" + String(this.id) + "!\nHOORAY.");
 
         // Deposit self
         this.exist = false;

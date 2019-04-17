@@ -18,6 +18,7 @@ let main = function() {
             trees: "trees.png",
             owl: "owl.png",
             disc: "disc.png",
+            font: "font.png",
         },
 
         // Documents
@@ -35,6 +36,8 @@ let main = function() {
         buttons: {
 
             fire1: 90,
+            start: 13,
+            cancel: 27,
         }
     }
     // Derired framerate

@@ -15,6 +15,7 @@ Game.prototype.init = function(evMan) {
     // Create components that do not
     // require assets
     this.cam = new Camera(0, 0);
+    this.msg = new Message();
 
     // Initialize arrays
     this.discs = [];
@@ -34,6 +35,13 @@ Game.prototype.onLoad = function(assets) {
 // Update
 Game.prototype.update = function(evMan, tm) {
 
+    // Update message
+    if(this.msg.active) {
+
+        this.msg.update(evMan, tm);
+        return;
+    }
+
     // Update camera
     this.cam.update(tm, this.stage.tmap);
 
@@ -51,7 +59,7 @@ Game.prototype.update = function(evMan, tm) {
         for(let i = 0; i < this.discs.length; ++ i) {
 
             this.discs[i].update(tm);
-            this.discs[i].playerCollision(this.player);
+            this.discs[i].playerCollision(this.player, this.msg);
         }
     }
     // Specific behavior if camera moving
@@ -79,4 +87,8 @@ Game.prototype.draw = function(g) {
 
     // Draw player
     this.player.draw(g, this.stage, this.cam);
+
+    // Draw message
+    g.setTranslation(0, 0);
+    this.msg.draw(g);
 }

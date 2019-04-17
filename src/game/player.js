@@ -13,6 +13,7 @@ let Player = function(x, y) {
     // Position & speed
     this.pos = new Vec2(x, y);
     this.startPos = this.pos.copy();
+    this.startPosSet = false;
     this.speed = new Vec2(0, 0);
     this.target = this.speed.copy();
     this.moveDir = {x: 0, y: 0};
@@ -20,6 +21,7 @@ let Player = function(x, y) {
     // Jump params
     this.canJump = false;
     this.doubleJump = false;
+    this.floating = false;
 
     // Is swimming
     this.swimming = false;
@@ -28,6 +30,11 @@ let Player = function(x, y) {
     // Thwomp
     this.thwomping = false;
     this.thwompTimer = 0;
+
+    // Is dying
+    this.dying = false;
+    // Is respawning
+    this.respawning = false;
 
     // Sprite
     this.spr = new AnimatedSprite(24, 24);
@@ -75,6 +82,7 @@ Player.prototype.control = function(evMan, tm) {
     const SWIM_SPEED = -1.25;
     const THWOMP_JUMP = -1.5;
     const THWOMP_DELTA = 0.1;
+    const FLOAT_GRAVITY = 0.5;
 
     let stick = evMan.vpad.stick;
 
@@ -132,6 +140,19 @@ Player.prototype.control = function(evMan, tm) {
 
             this.speed.y /= 2.0;
         }
+    }
+
+    // Floating
+    this.floating = 
+        !this.canJump && 
+        !this.swimming && 
+        !this.doubleJump && 
+        !this.thwomping &&
+        this.speed.y > 0 && 
+        s == State.Down;
+    if(this.floating) {
+
+        this.target.y = FLOAT_GRAVITY;
     }
 }
 
@@ -218,12 +239,10 @@ Player.prototype.updateCamera = function(cam, stage) {
         }
     }
 
-    // Store starting position
+    // Set certain flags
     if(cam.moving) {
 
-        this.startPos = this.pos.copy();
-        this.startPos.x += PL_MOVE_DELTA * this.moveDir.x;
-        this.startPos.y += PL_MOVE_DELTA * this.moveDir.y;
+        this.startPosSet = false;
     }
 }
 
@@ -243,9 +262,15 @@ Player.prototype.animate = function(tm) {
         this.spr.frame = 3;
         this.spr.row = 1;
     }
+    // Floating
+    else if(this.floating) {
+
+        this.spr.animate(2, 3, 5, FLAP_SPEED, tm);
+    }
     // Jumping
     else if(!this.canJump) {
 
+        // Double jump or swimming
         if( (this.swimming || !this.doubleJump) && this.speed.y < 0.0) {
 
             this.spr.animate(2, 0, 2, FLAP_SPEED, tm);
@@ -293,6 +318,65 @@ Player.prototype.moveCameraActive = function(stage, tm) {
     // Restrict position to the map area
     this.pos.x = negMod(this.pos.x, stage.tmap.width*16);
     this.pos.y = negMod(this.pos.y, stage.tmap.height*16);
+    
+    // Set start position
+    this.startPos.x = this.pos.x;
+    this.startPos.y = this.pos.y;
+
+}
+
+
+// Die
+Player.prototype.die = function() {
+
+    this.spr.frame = 0;
+    this.spr.row = 3;
+    this.spr.count = 0;
+
+    this.dying = true;
+
+    this.speed.x = 0;
+    this.speed.y = 0;
+}
+
+
+// Update death
+Player.prototype.updateDeath = function(tm) {
+
+    const DEATH_SPEED = 4;
+
+    // Animate dying
+    this.spr.animate(3, 0, 5, DEATH_SPEED, tm);
+    if(this.spr.frame == 5) {
+
+        // Reset params
+        this.pos = this.startPos.copy();
+        this.thwomping = false;
+        this.thwompTimer = 0;
+        this.swimming = false;
+        this.floating = false;
+        this.speed.x = 0;
+        this.speed.y = 0;
+
+        this.dying = false;
+        this.respawning = true;
+        this.spr.frame = 4;
+    }
+}
+
+
+// Respawn
+Player.prototype.respawn = function(tm) {
+
+    const RESPAWN_SPEED = 4;
+    this.spr.animate(3, 4, -1, RESPAWN_SPEED, tm);
+    if(this.spr.frame == -1) {
+
+        this.spr.frame = 0;
+        this.spr.row = 0;
+
+        this.respawning = false;
+    }
 }
 
 
@@ -301,9 +385,26 @@ Player.prototype.update = function(cam, evMan, tm) {
 
     const THWOMP_SHAKE = 4;
 
+    // Die, if dead
+    if(this.dying) {
+
+        this.updateDeath(tm);
+        return;
+    }
+    // Respawn, if used to be dead
+    if(this.respawning) {
+
+        this.respawn(tm);
+        return;
+    }
+
     // Update thwomp
     cam.shake = 0;
     if(this.canJump && this.thwomping) {
+
+        // No movement horizontally allowed
+        this.speed.x = 0;
+        this.target.x = 0;
 
         this.thwompTimer -= 1.0 * tm;
         cam.shake = THWOMP_SHAKE;
@@ -332,7 +433,7 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
     const COL_OFF_TOP = -0.5;
     const COL_OFF_BOTTOM = 1.0;
 
-    if(this.speed.y < 0.0)
+    if(this.dying || this.speed.y < 0.0)
         return;
 
     // Check if inside the horizontal area
@@ -348,6 +449,13 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
          this.speed.y = 0.0;
          this.canJump = true;
          this.doubleJump = true;
+
+         // Set starting position
+         if(!this.startPosSet) {
+
+            this.startPos = this.pos.copy();
+            this.startPosSet = true;
+         }
     }
 }
 
@@ -358,7 +466,7 @@ Player.prototype.ceilingCollision = function(x, y, w, tm) {
     const COL_OFF_TOP = -1.0;
     const COL_OFF_BOTTOM = 0.5;
 
-    if(this.speed.y > 0.0)
+    if(this.dying || this.speed.y > 0.0)
         return;
 
     // Check if inside the horizontal area
@@ -382,7 +490,7 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
     const COL_OFF_NEAR = 0.5;
     const COL_OFF_FAR = 1.0;
 
-    if(this.speed.x*dir < 0.0)
+    if(this.dying || this.speed.x*dir < 0.0)
         return;
 
     // Check if inside the collision area vertically
@@ -407,16 +515,21 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
 // Hurt collision
 Player.prototype.hurtCollision = function(x, y, w, h) {
 
+    if(this.dying) return;
+
     if(this.pos.x+this.width/2 >= x && this.pos.x-this.width/2 <= x+w &&
        this.pos.y >= y && this.pos.y-this.height <= y+h ) {
 
-        this.pos = this.startPos.copy();
+        // Die
+        this.die();
     }
 }
 
 
 // Stage collision
 Player.prototype.stageCollision = function(stage, cam, tm) {
+
+    if(this.dying) return;
 
     // Check camera
     this.updateCamera(cam, stage);

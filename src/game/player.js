@@ -344,6 +344,8 @@ Player.prototype.moveCameraActive = function(stage, tm) {
 // Die
 Player.prototype.die = function() {
 
+    const RECOVERY_TIME = 60;
+
     this.spr.frame = 0;
     this.spr.row = 3;
     this.spr.count = 0;
@@ -352,6 +354,8 @@ Player.prototype.die = function() {
 
     this.speed.x = 0;
     this.speed.y = 0;
+
+    this.recoveryTimer = RECOVERY_TIME;
 }
 
 
@@ -385,15 +389,12 @@ Player.prototype.updateDeath = function(tm) {
 Player.prototype.respawn = function(tm) {
 
     const RESPAWN_SPEED = 4;   
-    const RECOVERY_TIME = 60;
-
 
     this.spr.animate(3, 4, -1, RESPAWN_SPEED, tm);
     if(this.spr.frame == -1) {
 
         this.spr.frame = 0;
         this.spr.row = 0;
-        this.recoveryTimer = RECOVERY_TIME;
 
         this.respawning = false;
     }

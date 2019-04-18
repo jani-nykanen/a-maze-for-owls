@@ -11,12 +11,15 @@ let Enemy = function(x, y, id) {
     this.id = id;
 
     this.pos = new Vec2(x, y);
+    this.delta = new Vec2();
     this.spr = new AnimatedSprite(16, 16);
     this.flip = Flip.None;
     this.inCamera = false;
 
     this.speed = {x:0, y:0};
+    this.spcTimer = 0;
     this.onGround = false;
+
 
     // Determine ID specific behavior
     switch(id) {
@@ -35,6 +38,12 @@ let Enemy = function(x, y, id) {
         this.speed.y = BAT_SPEED * (((this.pos.y/16)|0) % 2 == 0 ? 1 : -1);
         break;
 
+    // Fish
+    case 2:
+
+        this.speed.x = ((this.pos.x/16)|0) % 2 == 0 ? 1.0 : -1.0;
+        break;
+
     default:
         break;
     };
@@ -50,6 +59,10 @@ Enemy.prototype.update = function(tm, cam) {
 
     const ANIM_SPEED_BAT = 8;
     const ANIM_SPEED_HEDGEHOG = 5;
+    const FISH_AMPLITUDE = 0.4;
+    const FISH_Y_MOD = 2.0;
+    const FISH_BASE_SPEED = 0.1;
+    const FISH_WAVE_SPEED = 0.025;
 
     // Is in camera
     this.inCamera = 
@@ -71,6 +84,25 @@ Enemy.prototype.update = function(tm, cam) {
 
         this.spr.animate(1, 0, 3, ANIM_SPEED_HEDGEHOG, tm);
         this.flip = this.speed.x > 0 ? Flip.Horizontal : Flip.None;
+    }
+    // Update fish
+    else if(this.id == 3) {
+
+        // Update special timer
+        this.spcTimer += FISH_WAVE_SPEED * tm;
+        this.spcTimer %= Math.PI;
+
+        // Move
+        let dir = this.speed.x < 0 ? -1 : 1;
+        this.speed.x = (FISH_BASE_SPEED 
+            + (Math.sin(this.spcTimer)) * FISH_AMPLITUDE) * dir;
+        this.flip = this.speed.x > 0 ? Flip.Horizontal : Flip.None;
+
+        // Determine frame
+        this.spr.row = 2;
+        this.spr.frame = this.spcTimer > Math.PI/2 ? 0 : 1;
+
+        this.delta.y = Math.sin(this.spcTimer*3) * FISH_Y_MOD;
     }
 
     // Move
@@ -110,6 +142,7 @@ Enemy.prototype.solidCollision = function(x, y, w, h) {
            (this.speed.x > 0 && this.pos.x - this.speed.x < x+w/2  )) {
 
             this.speed.x *= -1;
+            this.spcTimer = 0;
         }
     }
     // Vertical collisions
@@ -131,15 +164,15 @@ Enemy.prototype.draw = function(g, stage, cam) {
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.enemies, 
-        this.pos.x-8, 
-        this.pos.y-16,
+        this.pos.x-8 + this.delta.x, 
+        this.pos.y-16 + this.delta.y,
         this.flip);
 
     if(cam.moving) {
 
         this.spr.draw(g, g.bitmaps.enemies, 
-            this.pos.x-8 + stage.width, 
-            this.pos.y-16,
+            this.pos.x-8 + stage.width + this.delta.x, 
+            this.pos.y-16 + this.delta.y,
             this.flip);
     }
 }

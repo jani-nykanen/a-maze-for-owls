@@ -232,6 +232,36 @@ Stage.prototype.draw = function(cam, g) {
 }
 
 
+// Get enemy collisions
+Stage.prototype.enemyCollision = function(e) {
+
+    const COL_OFF = 2;
+
+    let sx = ((e.pos.x/16) | 0) - 2;
+    let sy = ((e.pos.y/16) | 0) - 2;
+    let ex = sx + 5;
+    let ey = sy + 5;
+
+    // Go though tiles and find solid
+    // tiles
+    let s;
+    for(let y = sy; y <= ey; ++ y) {
+
+        for(let x = sx; x <= ex; ++ x) {
+            
+            s = this.checkSolid(x, y);
+            if(s <= 0) continue;
+
+            if(s == 1 || s == 2 || s == 4) {
+
+                e.solidCollision(x*16+COL_OFF, y*16+COL_OFF, 
+                    16-COL_OFF*2, 16-COL_OFF*2);
+            }
+        }
+    }
+}
+
+
 // Get player collisions
 Stage.prototype.playerCollision = function(pl, tm) {
 
@@ -349,7 +379,7 @@ Stage.prototype.parseObjects = function(game) {
             if(t <= 0)
                 continue;
                 
-            if(t < 9) {
+            if(t < 3) {
                 switch(t) {
 
                 // Player
@@ -367,6 +397,11 @@ Stage.prototype.parseObjects = function(game) {
                     break;
                 };
             }
+            // Enemies
+            else if(t < 9) {
+
+                game.enemies.push(new Enemy(x*16+8, (y+1)*16, t-3));
+            } 
             // Disc
             else {
 

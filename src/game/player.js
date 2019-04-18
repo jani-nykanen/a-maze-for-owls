@@ -54,6 +54,9 @@ let Player = function(x, y) {
         true, // Thwomp
         false, // Dig
     ];
+
+    // Recovery timer
+    this.recoveryTimer = 0;
 }
 
 
@@ -381,12 +384,16 @@ Player.prototype.updateDeath = function(tm) {
 // Respawn
 Player.prototype.respawn = function(tm) {
 
-    const RESPAWN_SPEED = 4;
+    const RESPAWN_SPEED = 4;   
+    const RECOVERY_TIME = 60;
+
+
     this.spr.animate(3, 4, -1, RESPAWN_SPEED, tm);
     if(this.spr.frame == -1) {
 
         this.spr.frame = 0;
         this.spr.row = 0;
+        this.recoveryTimer = RECOVERY_TIME;
 
         this.respawning = false;
     }
@@ -410,6 +417,10 @@ Player.prototype.update = function(cam, evMan, tm) {
         this.respawn(tm);
         return;
     }
+
+    // Update recovery time
+    if(this.recoveryTimer > 0)
+        this.recoveryTimer -= 1.0 * tm;
 
     // Update thwomp
     cam.shake = 0;
@@ -541,7 +552,7 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
 // Hurt collision
 Player.prototype.hurtCollision = function(x, y, w, h) {
 
-    if(this.dying) return;
+    if(this.dying || this.recoveryTimer > 0) return;
 
     if(this.pos.x+this.width/2 >= x && this.pos.x-this.width/2 <= x+w &&
        this.pos.y >= y && this.pos.y-this.height <= y+h ) {
@@ -571,6 +582,11 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
 
 // Draw
 Player.prototype.draw = function(g, stage, cam) {
+
+    // Check recovery time
+    if(this.recoveryTimer > 0 && 
+        (Math.floor(this.recoveryTimer/4)|0) % 2 == 0)
+        return;
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.owl, 

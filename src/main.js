@@ -20,6 +20,7 @@ let main = function() {
             disc: "disc.png",
             font: "font.png",
             feather: "feather.png",
+            enemies: "enemies.png",
         },
 
         // Documents

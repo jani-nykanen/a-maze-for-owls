@@ -9,6 +9,28 @@ let Game = function() {
 }
 
 
+// Update an object
+Game.prototype.updateObjects = function(arr, tm) {
+
+    for(let i = 0; i < arr.length; ++ i) {
+
+        arr[i].update(tm, this.cam);
+        arr[i].playerCollision(this.player, this.msg);
+    }
+}
+
+
+// Draw an object
+Game.prototype.drawObjects = function(arr, g) {
+
+    for(let i = 0; i < arr.length; ++ i) {
+
+        arr[i].draw(g, this.stage, this.cam);
+    }
+}
+
+
+
 // Initialize
 Game.prototype.init = function(evMan) {
 
@@ -19,6 +41,7 @@ Game.prototype.init = function(evMan) {
     // Initialize arrays
     this.discs = [];
     this.feathers = [];
+    this.enemies = [];
 }
 
 
@@ -62,17 +85,16 @@ Game.prototype.update = function(evMan, tm) {
         this.stage.update(tm);
 
         // Update discs
-        for(let i = 0; i < this.discs.length; ++ i) {
-
-            this.discs[i].update(tm, this.cam);
-            this.discs[i].playerCollision(this.player, this.msg);
-        }
-
+        this.updateObjects(this.discs, tm);
         // Update feathers
-        for(let i = 0; i < this.feathers.length; ++ i) {
+        this.updateObjects(this.feathers, tm);
+        // Update enemies
+        this.updateObjects(this.enemies, tm);
 
-            this.feathers[i].update(tm, this.cam);
-            this.feathers[i].playerCollision(this.player);
+        // Enemy collisions
+        for(let i = 0; i < this.enemies.length; ++ i) {
+            
+            this.stage.enemyCollision(this.enemies[i]);
         }
     }
     // Specific behavior if camera moving
@@ -93,16 +115,11 @@ Game.prototype.draw = function(g) {
     this.stage.draw(this.cam, g);
 
      // Draw discs
-    for(let i = 0; i < this.discs.length; ++ i) {
-
-        this.discs[i].draw(g, this.stage, this.cam);
-    }
-
+    this.drawObjects(this.discs, g);
     // Draw feathers
-    for(let i = 0; i < this.feathers.length; ++ i) {
-
-        this.feathers[i].draw(g, this.stage, this.cam);
-    }
+    this.drawObjects(this.feathers, g);
+    // Draw enemies
+    this.drawObjects(this.enemies, g);
 
     // Draw player
     this.player.draw(g, this.stage, this.cam);

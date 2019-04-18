@@ -64,14 +64,14 @@ Game.prototype.update = function(evMan, tm) {
         // Update discs
         for(let i = 0; i < this.discs.length; ++ i) {
 
-            this.discs[i].update(tm);
+            this.discs[i].update(tm, this.cam);
             this.discs[i].playerCollision(this.player, this.msg);
         }
 
         // Update feathers
         for(let i = 0; i < this.feathers.length; ++ i) {
 
-            this.feathers[i].update(tm);
+            this.feathers[i].update(tm, this.cam);
             this.feathers[i].playerCollision(this.player);
         }
     }

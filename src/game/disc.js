@@ -9,15 +9,28 @@ let Disc = function(x, y, id) {
     this.spr = new AnimatedSprite(16, 16);
     this.exist = true;
     this.id = id;
+
+    this.inCamera = false;
 }
 
 
 // Update
-Disc.prototype.update = function(tm) {
+Disc.prototype.update = function(tm, cam) {
 
     const ANIM_SPEED = 4;
 
     if(!this.exist) return;
+
+    // Is in camera
+    this.inCamera = 
+        cam.moving || (
+        this.pos.x+16 >= cam.pos.x  && 
+        this.pos.x <= cam.pos.x+192 &&
+        this.pos.y+16 >= cam.pos.y  && 
+        this.pos.y <= cam.pos.y+144);
+
+    if(!this.inCamera)
+        return;
 
     // Animate
     this.spr.animate(0, 0, 5, ANIM_SPEED, tm);
@@ -27,7 +40,7 @@ Disc.prototype.update = function(tm) {
 // Player collision
 Disc.prototype.playerCollision = function(pl, msg) {
 
-    if(!this.exist || pl.dying) return;
+    if(!this.exist || pl.dying || !this.inCamera) return;
     
     let x = this.pos.x;
     let y = this.pos.y;
@@ -52,7 +65,7 @@ Disc.prototype.playerCollision = function(pl, msg) {
 // Draw
 Disc.prototype.draw = function(g, stage, cam) {
 
-    if(!this.exist) return;
+    if(!this.exist || !this.inCamera) return;
 
     // Draw sprite
     this.spr.draw(g, g.bitmaps.disc, this.pos.x, this.pos.y);
@@ -60,7 +73,7 @@ Disc.prototype.draw = function(g, stage, cam) {
     if(cam.moving) {
 
         this.spr.draw(g, g.bitmaps.disc, 
-            this.pos.x + Stage.width, 
+            this.pos.x + stage.width, 
             this.pos.y);
     }
 }

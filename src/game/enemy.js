@@ -5,22 +5,29 @@
 // Constructor
 let Enemy = function(x, y, id) {
 
-    const BAT_SPEED = 0.5;
+    const BAT_SPEED = 0.4;
+    const HHOG_SPEED = 0.5;
 
     this.id = id;
 
     this.pos = new Vec2(x, y);
     this.spr = new AnimatedSprite(16, 16);
+    this.flip = Flip.None;
     this.inCamera = false;
 
     this.speed = {x:0, y:0};
+    this.onGround = false;
 
     // Determine ID specific behavior
     switch(id) {
 
-    // Bat, horizontal
+    // Horizontal bat & hedgehog
+    case 2:
+        this.onGround = true;
     case 0:
-        this.speed.x = BAT_SPEED * (((this.pos.x/16)|0) % 2 == 0 ? 1 : -1);
+        this.speed.x = (id == 0 ? BAT_SPEED : HHOG_SPEED) * 
+            (((this.pos.x/16)|0) % 2 == 0 ? 1 : -1);
+
         break;
     
     // Bat, vertical
@@ -32,16 +39,17 @@ let Enemy = function(x, y, id) {
         break;
     };
 
-    // Hurt dimensions
-    this.width = 8;
-    this.height = 8;
+    // Hitbox
+    this.width = 12;
+    this.height = 12;
 }
 
 
 // Update
 Enemy.prototype.update = function(tm, cam) {
 
-    const ANIM_SPEED_BAT = 6;
+    const ANIM_SPEED_BAT = 8;
+    const ANIM_SPEED_HEDGEHOG = 5;
 
     // Is in camera
     this.inCamera = 
@@ -58,6 +66,12 @@ Enemy.prototype.update = function(tm, cam) {
 
         this.spr.animate(0, 0, 1, ANIM_SPEED_BAT, tm);
     }
+    // Animate hedgehog
+    else if(this.id == 2) {
+
+        this.spr.animate(1, 0, 3, ANIM_SPEED_HEDGEHOG, tm);
+        this.flip = this.speed.x > 0 ? Flip.Horizontal : Flip.None;
+    }
 
     // Move
     this.pos.x += this.speed.x * tm;
@@ -72,8 +86,8 @@ Enemy.prototype.playerCollision = function(pl) {
     if(!this.inCamera) return;
 
     pl.hurtCollision(this.pos.x-this.width/2, 
-        this.pos.y-this.height/2,
-         16-this.width, 16-this.height);
+        this.pos.y-this.height,
+         this.width, this.height);
 }
 
 
@@ -118,12 +132,14 @@ Enemy.prototype.draw = function(g, stage, cam) {
     // Draw sprite
     this.spr.draw(g, g.bitmaps.enemies, 
         this.pos.x-8, 
-        this.pos.y-16);
+        this.pos.y-16,
+        this.flip);
 
     if(cam.moving) {
 
         this.spr.draw(g, g.bitmaps.enemies, 
             this.pos.x-8 + stage.width, 
-            this.pos.y-16);
+            this.pos.y-16,
+            this.flip);
     }
 }

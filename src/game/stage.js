@@ -250,13 +250,34 @@ Stage.prototype.enemyCollision = function(e) {
         for(let x = sx; x <= ex; ++ x) {
             
             s = this.checkSolid(x, y);
-            if(s <= 0) continue;
+            if(s <= 0) {
+
+                if(!e.onGround || s < -1) continue;
+
+                // Special collision for ground enemies
+                if(
+                  (this.checkSolid(x+1, y) <= 0 &&
+                   this.checkSolid(x+1, y+1) > 0 &&
+                   this.checkSolid(x, y+1) <= 0) 
+                   ||
+                   (this.checkSolid(x-1, y) <= 0 &&
+                   this.checkSolid(x-1, y+1) > 0 &&
+                   this.checkSolid(x, y+1) <= 0)  
+                   ) {
+
+                    e.solidCollision(x*16+COL_OFF, y*16+COL_OFF, 
+                        16-COL_OFF*2, 16-COL_OFF*2);
+                }
+
+                continue;
+            }
 
             if(s == 1 || s == 2 || s == 4) {
 
                 e.solidCollision(x*16+COL_OFF, y*16+COL_OFF, 
                     16-COL_OFF*2, 16-COL_OFF*2);
             }
+
         }
     }
 }

@@ -1,6 +1,7 @@
 // An enemy
 // (c) 2019 Jani Nykänen
 
+const FUNGUS_WAIT = 60;
 
 // Constructor
 let Enemy = function(x, y, id) {
@@ -11,6 +12,7 @@ let Enemy = function(x, y, id) {
     this.id = id;
 
     this.pos = new Vec2(x, y);
+    this.startPos = this.pos.copy();
     this.delta = new Vec2();
     this.spr = new AnimatedSprite(16, 16);
     this.flip = Flip.None;
@@ -18,10 +20,12 @@ let Enemy = function(x, y, id) {
 
     this.speed = {x:0, y:0};
     this.spcTimer = 0;
+    this.spcTrigger = false;
     this.onGround = false;
 
 
     // Determine ID specific behavior
+    let modx = ((this.pos.x/16)|0) % 2 ;
     switch(id) {
 
     // Horizontal bat & hedgehog
@@ -29,7 +33,7 @@ let Enemy = function(x, y, id) {
         this.onGround = true;
     case 0:
         this.speed.x = (id == 0 ? BAT_SPEED : HHOG_SPEED) * 
-            (((this.pos.x/16)|0) % 2 == 0 ? 1 : -1);
+            (modx == 0 ? 1 : -1);
 
         break;
     
@@ -39,9 +43,16 @@ let Enemy = function(x, y, id) {
         break;
 
     // Fish
-    case 2:
+    case 3:
 
-        this.speed.x = ((this.pos.x/16)|0) % 2 == 0 ? 1.0 : -1.0;
+        this.speed.x = modx ? 1.0 : -1.0;
+        break;
+
+    // Mushroom
+    case 4: 
+        this.flip = modx != 0 ? Flip.None : Flip.Horizontal;
+        this.spcTrigger = true;
+        this.spcTimer = FUNGUS_WAIT;
         break;
 
     default:
@@ -63,6 +74,9 @@ Enemy.prototype.update = function(tm, cam) {
     const FISH_Y_MOD = 2.0;
     const FISH_BASE_SPEED = 0.1;
     const FISH_WAVE_SPEED = 0.025;
+    const FUNGUS_GRAVITY = 0.1;
+    const FUNGUS_MAX_GRAVITY = 2.0;
+    const FUNGUS_JUMP_HEIGHT = -2.25;
 
     // Is in camera
     this.inCamera = 
@@ -103,6 +117,45 @@ Enemy.prototype.update = function(tm, cam) {
         this.spr.frame = this.spcTimer > Math.PI/2 ? 0 : 1;
 
         this.delta.y = Math.sin(this.spcTimer*3) * FISH_Y_MOD;
+    }
+    // Update mushroom
+    else if(this.id == 4) {
+
+        this.spr.row = 3;
+
+        if(this.spcTrigger) {
+
+            this.spcTimer -= 1.0 * tm;
+            if(this.spcTimer < 0.0) {
+
+                this.spcTimer += FUNGUS_WAIT;
+                this.speed.y = FUNGUS_JUMP_HEIGHT;
+                this.spcTrigger = false;
+            }
+
+            // Set frame
+            this.spr.frame = 0;
+        }
+        else {
+
+            // Update gravity
+            this.speed.y += FUNGUS_GRAVITY * tm;
+            if(this.speed.y > FUNGUS_MAX_GRAVITY)
+                this.speed.y = FUNGUS_MAX_GRAVITY;
+
+            // Stop
+            if(this.pos.y >= this.startPos.y) {
+
+                this.pos.y = this.startPos.y;
+                this.spcTrigger = true;
+                this.speed.y = 0;
+            }
+
+            // Set frame
+            this.spr.frame = this.speed.y < 0 ? 1 : 2;
+        }
+
+        
     }
 
     // Move

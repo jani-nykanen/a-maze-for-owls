@@ -161,7 +161,6 @@ Player.prototype.control = function(evMan, tm) {
     this.floating = 
         !this.canJump && 
         !this.swimming && 
-        !this.doubleJump && 
         !this.thwomping &&
         this.speed.y > 0 && 
         s == State.Down;

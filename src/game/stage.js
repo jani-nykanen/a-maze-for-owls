@@ -256,11 +256,15 @@ Stage.prototype.enemyCollision = function(e) {
 
                 // Special collision for ground enemies
                 if(
-                  (this.checkSolid(x+1, y) <= 0 &&
+                  (
+                   e.speed.x < 0 && 
+                    this.checkSolid(x+1, y) <= 0 &&
                    this.checkSolid(x+1, y+1) > 0 &&
                    this.checkSolid(x, y+1) <= 0) 
                    ||
-                   (this.checkSolid(x-1, y) <= 0 &&
+                   (
+                   e.speed.x > 0 &&    
+                   this.checkSolid(x-1, y) <= 0 &&
                    this.checkSolid(x-1, y+1) > 0 &&
                    this.checkSolid(x, y+1) <= 0)  
                    ) {

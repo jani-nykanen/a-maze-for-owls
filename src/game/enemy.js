@@ -8,6 +8,7 @@ let Enemy = function(x, y, id) {
 
     const BAT_SPEED = 0.4;
     const HHOG_SPEED = 0.5;
+    const SNAKE_SPEED = 0.4;
 
     this.id = id;
 
@@ -23,23 +24,28 @@ let Enemy = function(x, y, id) {
     this.spcTrigger = false;
     this.onGround = false;
 
+    this.ignoreX = false;
+    this.ignoreY = false;
+
 
     // Determine ID specific behavior
     let modx = ((this.pos.x/16)|0) % 2 ;
     switch(id) {
 
-    // Horizontal bat & hedgehog
-    case 2:
-        this.onGround = true;
+    // Horizontal bat
     case 0:
-        this.speed.x = (id == 0 ? BAT_SPEED : HHOG_SPEED) * 
-            (modx == 0 ? 1 : -1);
-
+        this.speed.x = (modx == 0 ? 1 : -1) * BAT_SPEED;
         break;
     
     // Bat, vertical
     case 1: 
         this.speed.y = BAT_SPEED * (((this.pos.y/16)|0) % 2 == 0 ? 1 : -1);
+        break;
+
+    // Hedgehog
+    case 2:
+        this.onGround = true;
+        this.speed.x = (modx == 0 ? 1 : -1) * HHOG_SPEED;
         break;
 
     // Fish
@@ -53,6 +59,13 @@ let Enemy = function(x, y, id) {
         this.flip = modx != 0 ? Flip.None : Flip.Horizontal;
         this.spcTrigger = true;
         this.spcTimer = FUNGUS_WAIT;
+        break;
+
+    // Snake
+    case 5:
+        this.ignoreY = true;
+        this.onGround = true;
+        this.speed.x = (modx == 0 ? 1 : -1) * SNAKE_SPEED;
         break;
 
     default:
@@ -70,13 +83,15 @@ Enemy.prototype.update = function(tm, cam) {
 
     const ANIM_SPEED_BAT = 8;
     const ANIM_SPEED_HEDGEHOG = 5;
+    const ANIM_SPEED_SNAKE = 5;
     const FISH_AMPLITUDE = 0.4;
     const FISH_Y_MOD = 2.0;
     const FISH_BASE_SPEED = 0.1;
     const FISH_WAVE_SPEED = 0.025;
-    const FUNGUS_GRAVITY = 0.1;
-    const FUNGUS_MAX_GRAVITY = 2.0;
+    const GRAVITY = 0.1;
+    const MAX_GRAVITY = 2.0;
     const FUNGUS_JUMP_HEIGHT = -2.25;
+    const SNAKE_JUMP_HEIGHT = -1.5;
 
     // Is in camera
     this.inCamera = 
@@ -87,6 +102,8 @@ Enemy.prototype.update = function(tm, cam) {
         this.pos.y-16 < cam.pos.y+144);
     if(!this.inCamera)
         return;
+
+    let getGravity = false;
 
     // Animate bat
     if(this.id == 0 || this.id == 1) {
@@ -139,9 +156,7 @@ Enemy.prototype.update = function(tm, cam) {
         else {
 
             // Update gravity
-            this.speed.y += FUNGUS_GRAVITY * tm;
-            if(this.speed.y > FUNGUS_MAX_GRAVITY)
-                this.speed.y = FUNGUS_MAX_GRAVITY;
+            getGravity = true;
 
             // Stop
             if(this.pos.y >= this.startPos.y) {
@@ -149,6 +164,7 @@ Enemy.prototype.update = function(tm, cam) {
                 this.pos.y = this.startPos.y;
                 this.spcTrigger = true;
                 this.speed.y = 0;
+                getGravity = false;
             }
 
             // Set frame
@@ -157,10 +173,33 @@ Enemy.prototype.update = function(tm, cam) {
 
         
     }
+    // Update snake
+    else if(this.id == 5) {
+
+        this.spr.animate(4, 0, 3, ANIM_SPEED_SNAKE, tm);
+        this.flip = this.speed.x > 0 ? Flip.Horizontal : Flip.None;
+
+        // Jump
+        if(this.pos.y >= this.startPos.y) {
+
+            this.pos.y = this.startPos.y;
+            this.speed.y = SNAKE_JUMP_HEIGHT;
+        }
+        getGravity = true;
+    }
 
     // Move
     this.pos.x += this.speed.x * tm;
     this.pos.y += this.speed.y * tm;
+
+    // Update gravity
+    if(getGravity) {
+        
+        // Update gravity
+        this.speed.y += GRAVITY * tm;
+        if(this.speed.y > MAX_GRAVITY)
+            this.speed.y = MAX_GRAVITY;
+    }
 
 }
 
@@ -189,7 +228,7 @@ Enemy.prototype.solidCollision = function(x, y, w, h) {
         return;
 
     // Horizontal collisions
-    if(Math.abs(this.speed.x) > EPS) {
+    if(!this.ignoreX && Math.abs(this.speed.x) > EPS) {
 
         if( (this.speed.x < 0 && this.pos.x - this.speed.x > x+w/2) ||
            (this.speed.x > 0 && this.pos.x - this.speed.x < x+w/2  )) {
@@ -199,7 +238,7 @@ Enemy.prototype.solidCollision = function(x, y, w, h) {
         }
     }
     // Vertical collisions
-    else if(Math.abs(this.speed.y) > EPS) {
+    else if(!this.ignoreY && Math.abs(this.speed.y) > EPS) {
 
         if( (this.speed.y < 0 && this.pos.y - this.speed.y > y+h/2) ||
            (this.speed.y > 0 && this.pos.y - this.speed.y < y+h/2  )) {

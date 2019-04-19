@@ -20,6 +20,19 @@ Message.prototype.createSelf = function(msg) {
     this.timer = MSG_APPEAR_TIMER;
     this.msg = msg;
     this.active = true;
+
+    // Determine dimensions
+    let arr = msg.split("\n");
+    let max = arr[0].length;
+    for(let i = 1; i < arr.length; ++ i) {
+
+        if(arr[i].length > max) {
+
+            max = arr[i].length;
+        }
+    }
+    this.width = (max+1)*8;
+    this.height = (arr.length+1)*8
 }
 
 
@@ -48,8 +61,6 @@ Message.prototype.update = function(evMan, tm) {
 // Draw
 Message.prototype.draw = function(g) {
 
-    const WIDTH = 112;
-    const HEIGHT = 48;
 
     const BORDER_OFF_X = 2;
     const BORDER_OFF_Y = 2;
@@ -60,8 +71,8 @@ Message.prototype.draw = function(g) {
 
     // Draw box
     let t = 1.0-this.timer/MSG_APPEAR_TIMER;
-    let w = WIDTH*t;
-    let h = HEIGHT*t;
+    let w = this.width*t;
+    let h = this.height*t;
     let x = g.canvas.width/2 - w/2;
     let y = g.canvas.height/2 - h/2;
 

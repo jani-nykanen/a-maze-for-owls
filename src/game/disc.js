@@ -51,7 +51,8 @@ Disc.prototype.playerCollision = function(pl, msg) {
         pl.pos.y >= y && pl.pos.y-pl.height <= y+h ) {
 
         // Create message
-        msg.createSelf("LEARNED SKILL\n" + String(this.id) + "!\nHOORAY.");
+        // TEMPORARY!
+        msg.createSelf("YOU LEARNED TO DIG!\nNOW YOU CAN\nBREAK HORIZONTAL\nBRICKS!");
 
         // Deposit self
         this.exist = false;

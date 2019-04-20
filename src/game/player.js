@@ -52,7 +52,7 @@ let Player = function(x, y) {
         true, // Float
         true, // Swim
         true, // Thwomp
-        false, // Dig
+        true, // Dig
     ];
 
     // Recovery timer
@@ -230,6 +230,7 @@ Player.prototype.updateCamera = function(cam, stage) {
 
     // Move up
     if(this.speed.y < -EPS && 
+        this.pos.y-this.height > EPS &&
         this.pos.y-this.height < cam.pos.y) {
 
         cam.move(0, -1);

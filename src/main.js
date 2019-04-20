@@ -42,8 +42,8 @@ let main = function() {
             cancel: 27,
         }
     }
-    // Derired framerate
-    let framerate = 30;
+    // Desired framerate
+    let framerate = 60;
 
 
     // Create application core

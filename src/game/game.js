@@ -55,8 +55,8 @@ Game.prototype.onLoad = function(assets) {
 
     // Set camera
     this.cam = new Camera(
-        ((this.player.x/192) | 0) * 192, 
-        ((this.player.y/144) | 0) * 144
+        ((this.player.pos.x/192) | 0) * 192, 
+        ((this.player.pos.y/144) | 0) * 144
     );
 }
 

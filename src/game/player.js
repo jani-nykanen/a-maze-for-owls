@@ -28,8 +28,8 @@ let Player = function(x, y) {
     this.oldSwimState = false;
 
     // Thwomp
-    this.thwomping = false;
-    this.thwompTimer = 0;
+    this.thwomping = true;
+    this.thwompTimer = PL_THWOMP_WAIT;
     this.stopped = false;
 
     // Is dying
@@ -92,7 +92,7 @@ Player.prototype.control = function(evMan, tm) {
     const GRAVITY_TARGET = 1.25;
     const WATER_GRAVITY = 0.5;
     const THWOMP_GRAVITY = 4.0;
-    const JUMP_HEIGHT = -2.0;
+    const JUMP_HEIGHT = -2.25;
     const DOUBLE_JUMP_HEIGHT = -1.75;
     const SWIM_SPEED = -1.25;
     const THWOMP_JUMP = -1.5;

@@ -58,6 +58,9 @@ Game.prototype.onLoad = function(assets) {
         ((this.player.pos.x/192) | 0) * 192, 
         ((this.player.pos.y/144) | 0) * 144
     );
+
+    // Translate player a little
+    this.player.pos.y -= 32;
 }
 
 

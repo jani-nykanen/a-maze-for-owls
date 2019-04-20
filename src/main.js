@@ -43,7 +43,7 @@ let main = function() {
         }
     }
     // Desired framerate
-    let framerate = 60;
+    let framerate = 30;
 
 
     // Create application core

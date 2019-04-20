@@ -2,6 +2,44 @@
 // (c) 2019 Jani Nykänen
 
 
+// Messages
+const MESSAGES = [
+
+    "YOU LEARN: WALK.\n"+
+    "USE \1 AND \2 TO\n"+
+    "WALK.",
+    
+    "YOU LEARN: JUMP.\n"+
+    "PRESS Z TO JUMP.",
+    
+    "YOU LEARN: DOUBLE JUMP.\n"+
+    "PRESS Z ON AIR TO\n"+
+    "PERFORM THE\n"+
+    "DOUBLE JUMP.",
+    
+    "YOU LEARN: FLAP.\n"+
+    "HOLD Z TO REDUCE YOUR\n"+
+    "LANDING SPEED.",
+    
+    "YOU LEARN: SWIM.\n"+
+    "THE WATER KILLS YOU\n"+
+    "NO LONGER.",
+    
+    "YOU LEARN: HEAD THUMP.\n"+
+    "PRESS Z AND \3 WHILE\n"+
+    "ON AIR TO PERFORM\n"+
+    "THE HEAD THUMP."
+    ,
+    
+    "YOU LEARN: DIG.\n"+
+    "YOU CAN NOW BREAK\n"+
+    "BRICKS HORIZONTALLY\n"+
+    "BY TOUCHING THEM."
+    
+    ];
+    
+
+
 // Constructor
 let Disc = function(x, y, id) {
 
@@ -50,9 +88,8 @@ Disc.prototype.playerCollision = function(pl, msg) {
     if(pl.pos.x+pl.width/2 >= x && pl.pos.x-pl.width/2 <= x+w &&
         pl.pos.y >= y && pl.pos.y-pl.height <= y+h ) {
 
-        // Create message
-        // TEMPORARY!
-        msg.createSelf("YOU LEARNED TO DIG!\nNOW YOU CAN\nBREAK HORIZONTAL\nBRICKS!");
+        // Create a message
+        msg.createSelf(MESSAGES[this.id]);
 
         // Deposit self
         this.exist = false;

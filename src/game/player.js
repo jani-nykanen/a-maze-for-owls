@@ -46,13 +46,13 @@ let Player = function(x, y) {
 
     // Skills
     this.skills = [
-        true, // Walk
-        true, // Jump,
-        true, // Double jump
-        true, // Float
-        true, // Swim
-        true, // Thwomp
-        true, // Dig
+        false, // Walk
+        false, // Jump,
+        false, // Double jump
+        false, // Float
+        false, // Swim
+        false, // Thwomp
+        false, // Dig
     ];
 
     // Recovery timer
@@ -113,7 +113,7 @@ Player.prototype.control = function(evMan, tm) {
     if(this.thwomping) return;
 
     // Set horizontal target
-    this.target.x = stick.x * MOVE_TARGET;
+    this.target.x = this.skills[0] ? stick.x * MOVE_TARGET : 0;
 
     // Jumps
     let s = evMan.vpad.buttons.fire1.state;
@@ -130,19 +130,20 @@ Player.prototype.control = function(evMan, tm) {
         this.speed.y =  JUMP_HEIGHT;
         this.doubleJump = true;
     }
-    else {
+    else if(this.skills[1]) {
 
         if(s == State.Pressed) {
 
             // Thwomp
-            if(!this.canJump && stick.y > THWOMP_DELTA) {
+            if(this.skills[5] && !this.canJump && stick.y > THWOMP_DELTA) {
 
                 this.thwomping = true;
                 this.thwompTimer = PL_THWOMP_WAIT;
                 this.speed.y = THWOMP_JUMP;
             }
             // Normal & double jump
-            else if( (this.doubleJump || this.canJump) && s == State.Pressed) {
+            else if( ( (this.doubleJump && this.skills[2]) || 
+                this.canJump) && s == State.Pressed) {
 
                 this.speed.y = this.canJump ? JUMP_HEIGHT : DOUBLE_JUMP_HEIGHT;
                 if(!this.canJump)
@@ -159,6 +160,7 @@ Player.prototype.control = function(evMan, tm) {
 
     // Floating
     this.floating = 
+        this.skills[3] &&
         !this.canJump && 
         !this.swimming && 
         !this.thwomping &&
@@ -576,7 +578,14 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
     stage.playerCollision(this, tm);
 
     // Swimming?
-    this.swimming = this.pos.y-this.height >= stage.surfY;
+    if(this.skills[4])
+        this.swimming = this.pos.y-this.height >= stage.surfY;
+
+    else {
+
+        this.swimming = false;
+        this.hurtCollision(0, stage.surfY, stage.width, stage.height-stage.surfY);
+    }
 }
 
 

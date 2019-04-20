@@ -57,6 +57,9 @@ let Player = function(x, y) {
 
     // Recovery timer
     this.recoveryTimer = 0;
+
+    // Feathers
+    this.feathers = 0;
 }
 
 

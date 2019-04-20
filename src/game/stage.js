@@ -73,6 +73,9 @@ let Stage = function(docs) {
 
         this.bricks[i] = new DyingBrick();
     }
+
+    // Feather count
+    this.featherCount = 0;
 }
 
 
@@ -415,6 +418,7 @@ Stage.prototype.parseObjects = function(game) {
                 // Feather
                 case 2:
                     game.feathers.push(new Feather(x*16, y*16));
+                    ++ this.featherCount;
                     break;  
 
 

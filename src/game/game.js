@@ -30,6 +30,44 @@ Game.prototype.drawObjects = function(arr, g) {
 }
 
 
+// Draw feather count
+Game.prototype.drawFeatherCount = function(g) {
+
+    const YOFF = 1;
+    const WIDTH = 44;
+    const HEIGHT = 10;
+    const XPOS = 20;
+    const FEATHER_X = 1;
+
+    let str = String(this.player.feathers) + "/" + 
+        String(this.stage.featherCount);
+
+    // Draw bar outlines
+    let y = g.canvas.height-14;
+    g.fillRect(XPOS-2, y-2, WIDTH+4, HEIGHT+4, {r:255, g:255, b:255});
+    g.fillRect(XPOS-1, y-1, WIDTH+2, HEIGHT+2, {r:0, g:0, b:0});
+    g.fillRect(XPOS, y, WIDTH, HEIGHT, {r:0, g:0, b:0});
+
+    // Draw bar
+    let t = this.player.feathers / this.stage.featherCount;
+    let w = ((WIDTH-1)*t)|0;
+    if(w > WIDTH-1)
+        w = WIDTH-1;
+    g.fillRect(XPOS, y, w, HEIGHT, {r:85, g:85, b:85});
+    g.fillRect(XPOS, y+1, w, HEIGHT/2, {r:170, g:170, b:170});
+    if(w > 0)
+        g.fillRect(XPOS+w, y, 1, HEIGHT, {r:85, g:85, b:85});
+
+    // Draw text
+    g.drawText(g.bitmaps.font,
+        str, 
+        XPOS+WIDTH/2, y+YOFF, 
+        0, 0, true);
+    
+    // Draw feather icon
+    g.drawBitmap(g.bitmaps.feather, FEATHER_X, y+HEIGHT/2 - 8);
+}
+
 
 // Initialize
 Game.prototype.init = function(evMan) {
@@ -130,4 +168,7 @@ Game.prototype.draw = function(g) {
     // Draw message
     g.setTranslation(0, 0);
     this.msg.draw(g);
+
+    // Draw feather count
+    this.drawFeatherCount(g);
 }

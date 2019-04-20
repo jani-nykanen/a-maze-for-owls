@@ -49,6 +49,8 @@ Feather.prototype.playerCollision = function(pl) {
     if(pl.pos.x+pl.width/2 >= x && pl.pos.x-pl.width/2 <= x+w &&
         pl.pos.y >= y && pl.pos.y-pl.height <= y+h ) {
 
+        ++ pl.feathers;
+
         // Deposit self
         this.exist = false;
     }

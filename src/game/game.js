@@ -69,9 +69,30 @@ Game.prototype.drawFeatherCount = function(g) {
 }
 
 
+// Draw pause screen
+Game.prototype.drawPause = function(g) {
+
+    const WIDTH = 96;
+    const HEIGHT = 16;
+
+    let x = g.canvas.width/2 - WIDTH/2;
+    let y = g.canvas.height/2 - HEIGHT/2;
+
+    g.fillRect(x-2, y-2, WIDTH+4, HEIGHT+4, {r:255, g:255, b:255});
+    g.fillRect(x-1, y-1, WIDTH+2, HEIGHT+2, {r:0, g:0, b:0});
+    g.fillRect(x, y, WIDTH, HEIGHT, {r:85, g:85, b:85});
+
+    g.drawText(g.bitmaps.font, "GAME PAUSED", 
+        x+WIDTH/2, y+HEIGHT/2-4, 0, 0, true);
+}
+
+
 // Initialize
 Game.prototype.init = function(evMan) {
 
+    // Set initial values
+    this.paused = false;
+    
     // Create components that do not
     // require assets
     this.msg = new Message();
@@ -105,12 +126,21 @@ Game.prototype.onLoad = function(assets) {
 // Update
 Game.prototype.update = function(evMan, tm) {
 
+    if(evMan.transition.active) return;
+
     // Update message
     if(this.msg.active) {
 
         this.msg.update(evMan, tm);
         return;
     }
+
+    // Check pause
+    if(evMan.vpad.buttons.start.state == State.Pressed) {
+            
+        this.paused = !this.paused;
+    }
+    if(this.paused) return;
 
     // Update camera
     this.cam.update(tm, this.stage.tmap);
@@ -171,4 +201,8 @@ Game.prototype.draw = function(g) {
 
     // Draw feather count
     this.drawFeatherCount(g);
+
+    // Draw pause
+    if(this.paused)
+        this.drawPause(g);
 }

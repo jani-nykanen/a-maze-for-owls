@@ -21,6 +21,7 @@ let main = function() {
             font: "font.png",
             feather: "feather.png",
             enemies: "enemies.png",
+            donut: "donut.png",
         },
 
         // Documents

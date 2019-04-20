@@ -41,7 +41,7 @@ let Player = function(x, y) {
     this.spr = new AnimatedSprite(24, 24);
 
     // Hitbox
-    this.width = 4;
+    this.width = 6;
     this.height = 12;
 
     // Skills
@@ -468,7 +468,7 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
 
     // Check if inside the horizontal area
     if(!(this.pos.x+this.width/2 >= x && 
-        this.pos.x-this.width/2 < x+w))
+        this.pos.x-this.width/2 <= x+w))
         return false;
 
     // Vertical collision
@@ -524,10 +524,12 @@ Player.prototype.ceilingCollision = function(x, y, w, tm) {
 // Get a wall collision
 Player.prototype.wallCollision = function(dir, x, y, h, tm) {
 
+    const EPS = 0.01;
+
     const COL_OFF_NEAR = 0.5;
     const COL_OFF_FAR = 1.0;
 
-    if(this.dying || this.speed.x*dir < 0.0)
+    if(this.dying || this.speed.x*dir < EPS)
         return false;
 
     // Check if inside the collision area vertically
@@ -538,7 +540,7 @@ Player.prototype.wallCollision = function(dir, x, y, h, tm) {
     // Horizontal collision
     if((dir == 1 && 
         this.pos.x+this.width/2 >= x - COL_OFF_NEAR*tm && 
-        this.pos.x+this.width/2  <= x+(COL_OFF_FAR+this.speed.x)*tm) ||
+        this.pos.x+this.width/2 <= x + (COL_OFF_FAR+this.speed.x)*tm) ||
        (dir == -1 && 
         this.pos.x-this.width/2  <= x + COL_OFF_NEAR*tm && 
         this.pos.x-this.width/2  >= x-(COL_OFF_FAR-this.speed.x)*tm)) {

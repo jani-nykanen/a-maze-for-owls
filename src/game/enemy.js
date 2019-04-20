@@ -58,7 +58,7 @@ let Enemy = function(x, y, id) {
     case 4: 
         this.flip = modx != 0 ? Flip.None : Flip.Horizontal;
         this.spcTrigger = true;
-        this.spcTimer = FUNGUS_WAIT;
+        this.spcTimer = FUNGUS_WAIT + (this.pos.x % FUNGUS_WAIT);
         break;
 
     // Snake

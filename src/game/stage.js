@@ -432,9 +432,13 @@ Stage.prototype.parseObjects = function(game) {
                 game.enemies.push(new Enemy(x*16+8, (y+1)*16, t-3));
             } 
             // Disc
-            else {
+            else if(t < 17) {
 
                 game.discs.push(new Disc(x*16, y*16, t-9));
+            }
+            else if(t == 17) {
+
+                game.donut = new Donut(x*16, (y+1)*16 + 8);
             }
         }
     }

@@ -92,6 +92,7 @@ Game.prototype.init = function(evMan) {
 
     // Set initial values
     this.paused = false;
+    this.donut = null;
     
     // Create components that do not
     // require assets
@@ -159,14 +160,18 @@ Game.prototype.update = function(evMan, tm) {
         this.updateObjects(this.discs, tm);
         // Update feathers
         this.updateObjects(this.feathers, tm);
+
         // Update enemies
         this.updateObjects(this.enemies, tm);
-
         // Enemy collisions
         for(let i = 0; i < this.enemies.length; ++ i) {
             
             this.stage.enemyCollision(this.enemies[i]);
         }
+
+        // Update donut
+        this.donut.update(this.cam, tm);
+        this.donut.playerCollision(this.player);
     }
     // Specific behavior if camera moving
     else {
@@ -191,6 +196,8 @@ Game.prototype.draw = function(g) {
     this.drawObjects(this.feathers, g);
     // Draw enemies
     this.drawObjects(this.enemies, g);
+    // Draw donut
+    this.donut.draw(g);
 
     // Draw player
     this.player.draw(g, this.stage, this.cam);

@@ -1,5 +1,5 @@
-// A template main file
-// (c) Insert your name here
+// Main
+// (c) 2019 Jani Nykänen
 
 
 // The main function
@@ -23,6 +23,7 @@ let main = function() {
             enemies: "enemies.png",
             donut: "donut.png",
             theEnd: "the_end.png",
+            logo: "logo.png",
         },
 
         // Documents
@@ -53,11 +54,10 @@ let main = function() {
     let c = new Core();
 
     // Add scenes
-    // Help: addScene(scene, makeActive=false, makeGlobal=false)
-    c.addScene(new Game(), true);
+    c.addScene(new Title(), true);
+    c.addScene(new Game(), false);
     c.addScene(new Ending(), false);
     c.addScene(new Global(), false, true);
-    // Add more scenes here
 
     // Run application
     c.run(framerate, assetContent, gamepadConfig);

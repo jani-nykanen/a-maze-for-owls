@@ -8,7 +8,7 @@ let Feather = function(x, y) {
     this.pos = new Vec2(x, y);
     this.exist = true;
     this.waveTimer = Math.random() * Math.PI*2;
-    this.inCamera = false;
+    this.inCamera = true;
 }
 
 

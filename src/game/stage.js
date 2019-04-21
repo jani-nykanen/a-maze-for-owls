@@ -55,27 +55,31 @@ let Stage = function(docs) {
     this.waterPos = 0;
     this.wave = 0;
 
-    // Create tilemap
-    this.tmap = new Tilemap(docs.map);
-    // Create collision map
-    this.collisions = new Tilemap(docs.collisions);
+    if(docs != null) {
 
-    // Dimensions
-    this.width = this.tmap.width*16;
-    this.height = this.tmap.height*16;
+        // Create tilemap
+        this.tmap = new Tilemap(docs.map);
+        // Create collision map
+        this.collisions = new Tilemap(docs.collisions);
 
-    // Water surface position
-    this.surfY = this.tmap.height*16 - 144 - 16;
+        // Dimensions
+        this.width = this.tmap.width*16;
+        this.height = this.tmap.height*16;
 
-    // Initialize dying bricks
-    this.bricks = new Array(DYING_BRICK_COUNT);
-    for(let i = 0; i < this.bricks.length; ++ i) {
+        // Water surface position
+        this.surfY = this.tmap.height*16 - 144 - 16;
 
-        this.bricks[i] = new DyingBrick();
+        // Initialize dying bricks
+        this.bricks = new Array(DYING_BRICK_COUNT);
+        for(let i = 0; i < this.bricks.length; ++ i) {
+
+            this.bricks[i] = new DyingBrick();
+        }
+
+        // Feather count
+        this.featherCount = 0;
+
     }
-
-    // Feather count
-    this.featherCount = 0;
 }
 
 
@@ -189,6 +193,10 @@ Stage.prototype.update = function(tm) {
     this.waterPos += WATER_SPEED * tm;
     if(this.waterPos >= 16)
         this.waterPos -= 16;
+
+    if(this.tmap == null)
+        return;
+
     // Update waves
     this.wave += WAVE_SPEED*tm;
     if(this.wave >= 2*Math.PI) 
@@ -203,23 +211,30 @@ Stage.prototype.update = function(tm) {
 
 
 // Draw stage
-Stage.prototype.draw = function(cam, g) {
+Stage.prototype.draw = function(cam, g, bgTrans) {
 
     const CLOUD_Y = 16;
 
+    bgTrans = bgTrans == null ? 0 : bgTrans;
+
     // Draw background
-    g.drawBitmap(g.bitmaps.background, 0, 0);
+    g.drawBitmap(g.bitmaps.background, 0, bgTrans);
 
     // Draw clouds
     for(let i = 0; i < 2; ++ i) {
 
         g.drawBitmap(g.bitmaps.clouds, 
-            -this.cloudPos + i*192, CLOUD_Y);
+            -this.cloudPos + i*192, CLOUD_Y+bgTrans);
     }
 
     // Draw forest
-    g.drawBitmap(g.bitmaps.trees, 0, 144-64);
+    g.drawBitmap(g.bitmaps.trees, 0, 144-64+bgTrans);
 
+
+    if(cam == null)
+        return;
+
+    
     // Use camera
     cam.use(g);
     // Draw water

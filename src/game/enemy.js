@@ -17,7 +17,7 @@ let Enemy = function(x, y, id) {
     this.delta = new Vec2();
     this.spr = new AnimatedSprite(16, 16);
     this.flip = Flip.None;
-    this.inCamera = false;
+    this.inCamera = true;
 
     this.speed = {x:0, y:0};
     this.spcTimer = 0;

@@ -13,26 +13,25 @@ const MESSAGES = [
     "PRESS Z TO JUMP.",
     
     "YOU LEARN: DOUBLE JUMP.\n"+
-    "PRESS Z ON AIR TO\n"+
-    "PERFORM THE\n"+
-    "DOUBLE JUMP.",
+    "NOW YOU CAN JUMP\n"+
+    "TWICE.",
     
     "YOU LEARN: FLAP.\n"+
     "HOLD Z TO REDUCE YOUR\n"+
     "LANDING SPEED.",
     
     "YOU LEARN: SWIM.\n"+
-    "THE WATER KILLS YOU\n"+
-    "NO LONGER.",
+    "NOW YOU CAN SWIM IN\n"+
+    "WATER.",
     
     "YOU LEARN: HEAD THUMP.\n"+
     "PRESS Z AND \3 WHILE\n"+
-    "ON AIR TO PERFORM\n"+
-    "THE HEAD THUMP."
+    "ON AIR TO BREAK\n"+
+    "BRICKS VERTICALLY."
     ,
     
     "YOU LEARN: DIG.\n"+
-    "YOU CAN NOW BREAK\n"+
+    "NOW YOU CAN BREAK\n"+
     "BRICKS HORIZONTALLY\n"+
     "BY TOUCHING THEM."
     
@@ -48,7 +47,7 @@ let Disc = function(x, y, id) {
     this.exist = true;
     this.id = id;
 
-    this.inCamera = false;
+    this.inCamera = true;
 }
 
 

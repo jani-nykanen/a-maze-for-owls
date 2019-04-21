@@ -22,6 +22,7 @@ let main = function() {
             feather: "feather.png",
             enemies: "enemies.png",
             donut: "donut.png",
+            theEnd: "the_end.png",
         },
 
         // Documents
@@ -41,6 +42,7 @@ let main = function() {
             fire1: 90,
             start: 13,
             cancel: 27,
+           // debug: 80, // TODO: REMOVE!
         }
     }
     // Desired framerate
@@ -53,6 +55,7 @@ let main = function() {
     // Add scenes
     // Help: addScene(scene, makeActive=false, makeGlobal=false)
     c.addScene(new Game(), true);
+    c.addScene(new Ending(), false);
     c.addScene(new Global(), false, true);
     // Add more scenes here
 

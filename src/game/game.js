@@ -129,6 +129,17 @@ Game.prototype.update = function(evMan, tm) {
 
     if(evMan.transition.active) return;
 
+    // DEBUG!
+    // if(evMan.vpad.buttons.debug.state == State.Pressed ||
+    if(this.player.feathers >= this.stage.featherCount 
+        ) {
+
+        evMan.transition.activate(Fade.In, 1.0,
+            () => {
+                evMan.changeScene("ending")
+            }, {r: 255, g: 255, b: 255}, 4);
+    }
+
     // Update message
     if(this.msg.active) {
 

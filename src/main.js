@@ -56,6 +56,7 @@ let main = function() {
     // Add scenes
     c.addScene(new Title(), true);
     c.addScene(new Game(), false);
+    c.addScene(new Story(), false);
     c.addScene(new Ending(), false);
     c.addScene(new Global(), false, true);
 

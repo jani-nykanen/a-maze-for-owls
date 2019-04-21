@@ -33,13 +33,25 @@ Title.prototype.onLoad = function(assets) {
 // Update
 Title.prototype.update = function(evMan, tm) {
 
-    if(evMan.transition.active) return;
+    const FLICKER_SPEED = 15;
+
+    if(evMan.transition.active) {
+
+        if(evMan.transition.mode == Fade.In) {
+
+            this.enterTimer += FLICKER_SPEED * tm;
+            this.enterTimer %= TITLE_ENTER_TIME_MAX;
+        }
+
+        return;
+    }
 
     // Check enter or Z
     if( evMan.vpad.buttons.start.state == State.Pressed ||
          evMan.vpad.buttons.fire1.state == State.Pressed ) {
 
-        evMan.transition.activate(Fade.In, 1.0, () => {evMan.changeScene("game");},
+        evMan.transition.activate(Fade.In, 1.0, 
+            () => {evMan.changeScene("story");},
             {r: 0, g: 0, b: 0}, 4);
     }
 
@@ -58,7 +70,7 @@ Title.prototype.draw = function(g) {
     const LOGO_Y = 8;
     const BG_TRANS = 32;
     const COPYRIGHT_YOFF = 9;
-    const ENTER_YOFF = 32;
+    const ENTER_YOFF = 40;
 
     g.clear(85, 85, 85);
 

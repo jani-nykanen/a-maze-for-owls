@@ -152,7 +152,12 @@ Game.prototype.update = function(evMan, tm) {
             
         this.paused = !this.paused;
     }
-    if(this.paused) return;
+    if(this.paused) {
+        
+        // No shaking if paused
+        this.cam.shake = 0;
+        return;
+    }
 
     // Update camera
     this.cam.update(tm, this.stage.tmap);

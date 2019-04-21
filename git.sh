@@ -6,4 +6,4 @@ git add dev
 git add assets
 git add index.html
 git add README.md
-
+git add ghpages.sh

@@ -24,6 +24,7 @@ let main = function() {
             donut: "donut.png",
             theEnd: "the_end.png",
             logo: "logo.png",
+            intro: "intro.png",
         },
 
         // Documents
@@ -54,7 +55,8 @@ let main = function() {
     let c = new Core();
 
     // Add scenes
-    c.addScene(new Title(), true);
+    c.addScene(new Intro(), true);
+    c.addScene(new Title(), false);
     c.addScene(new Game(), false);
     c.addScene(new Story(), false);
     c.addScene(new Ending(), false);

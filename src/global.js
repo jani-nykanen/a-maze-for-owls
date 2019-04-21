@@ -13,7 +13,7 @@ let Global = function() {
 Global.prototype.init = function(evMan) {
 
     // Fade in
-    evMan.transition.activate(Fade.Out, 2.0, null, null, 4);
+    evMan.transition.activate(Fade.Out, 1.0, null, null, 4);
 }
 
 

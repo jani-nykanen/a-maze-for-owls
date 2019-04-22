@@ -40,7 +40,7 @@ let Donut = function(x, y) {
 
 
 // Update
-Donut.prototype.update = function(cam, tm) {
+Donut.prototype.update = function(cam, evMan, tm) {
 
     const ANIM_SPEED = 5;
     const GRAVITY = 0.05;
@@ -105,6 +105,9 @@ Donut.prototype.update = function(cam, tm) {
             this.speed.y = JUMP_HEIGHT[this.jumpMode];
             ++ this.jumpMode;
             this.jumpMode %= 2; 
+
+            // Play jump
+            evMan.audio.playSample(evMan.sounds.jump2, 0.4);
         }
     }
 

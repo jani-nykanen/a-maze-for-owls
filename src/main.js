@@ -44,8 +44,16 @@ let main = function() {
             select: "select.wav",
             choose: "choose.wav",
             jump: "jump.wav",
+            jump2: "jump.wav",
             feather: "feather.wav",
             hurt: "hurt.wav",
+            walk: "walk.wav",
+            disc: "disc.wav",
+            pause: "pause.wav",
+            respawn: "respawn.wav",
+            flap: "flap.wav",
+            thwomp: "thwomp.wav",
+            dig: "dig.wav",
         }
     }
 

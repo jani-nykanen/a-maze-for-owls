@@ -64,6 +64,8 @@ let Player = function(x, y) {
 
     // Sound effect states
     this.hurtPlayed = true;
+    this.respawnPlayed = true;
+    this.thwompPlayed = true;
 }
 
 
@@ -155,9 +157,12 @@ Player.prototype.control = function(evMan, tm) {
                 this.speed.y = this.canJump ? JUMP_HEIGHT : DOUBLE_JUMP_HEIGHT;
                 if(!this.canJump)
                     this.doubleJump = false;
+                else {
 
-                // Play jump
-                evMan.audio.playSample(evMan.sounds.jump, 0.5);
+                    // Play jump
+                    evMan.audio.playSample(evMan.sounds.jump, 0.5);
+                }
+                
             }
         
         }
@@ -275,7 +280,7 @@ Player.prototype.updateCamera = function(cam, stage) {
 
 
 // Animate
-Player.prototype.animate = function(tm) {
+Player.prototype.animate = function(evMan, tm) {
 
     const WALK_BASE = 12;
     const WALK_MOD = 6;
@@ -283,16 +288,22 @@ Player.prototype.animate = function(tm) {
     const FLAP_SPEED = 2;
     const EPS = 0.01;
 
+    let oldFrame = this.spr.frame;
+
     // "Thwomp"
     if(this.thwomping) {
 
         this.spr.frame = 3;
         this.spr.row = 1;
     }
-    // Floating
+    // Floating (or swimming)
     else if(this.floating) {
 
         this.spr.animate(2, 3, 5, FLAP_SPEED, tm);
+        if(this.spr.frame == 4 && oldFrame == 3) {
+
+            evMan.audio.playSample(evMan.sounds.flap, 0.4);
+        }
     }
     // Jumping
     else if(!this.canJump) {
@@ -301,6 +312,10 @@ Player.prototype.animate = function(tm) {
         if( (this.swimming || !this.doubleJump) && this.speed.y < 0.0) {
 
             this.spr.animate(2, 0, 2, FLAP_SPEED, tm);
+            if(this.spr.frame == 1 && oldFrame == 0) {
+
+                evMan.audio.playSample(evMan.sounds.flap, 0.4);
+            }
         }
         else {
 
@@ -329,6 +344,10 @@ Player.prototype.animate = function(tm) {
             let begin = this.speed.x > 0 ? 1 : 3;
             let speed = (WALK_BASE - (Math.abs(this.speed.x))*WALK_MOD) | 0;
             this.spr.animate(0, begin, begin+1, speed, tm);
+            if(begin != this.spr.frame && oldFrame != this.spr.frame) {
+
+                evMan.audio.playSample(evMan.sounds.walk, 0.5);
+            }
         }
     }
 }
@@ -392,6 +411,7 @@ Player.prototype.updateDeath = function(tm) {
 
         this.dying = false;
         this.respawning = true;
+        this.respawnPlayed = false;
         this.spr.frame = 4;
     }
 }
@@ -423,6 +443,18 @@ Player.prototype.update = function(cam, evMan, tm) {
 
         evMan.audio.playSample(evMan.sounds.hurt, 0.5);
         this.hurtPlayed = true;
+    }
+    // Play respawn sound
+    if(!this.respawnPlayed) {
+
+        evMan.audio.playSample(evMan.sounds.respawn, 0.5);
+        this.respawnPlayed = true;
+    }
+    // Play thwomp sound
+    if(!this.thwompPlayed) {
+
+        evMan.audio.playSample(evMan.sounds.thwomp, 0.5);
+        this.thwompPlayed = true;
     }
 
     // Die, if dead
@@ -467,7 +499,7 @@ Player.prototype.update = function(cam, evMan, tm) {
     // Move
     this.move(evMan, tm);
     // Animate
-    this.animate(tm);
+    this.animate(evMan, tm);
 
     // Play feather sound
     if(this.oldFeathers != this.feathers) {
@@ -504,8 +536,13 @@ Player.prototype.floorCollision = function(x, y, w, tm) {
          this.canJump = true;
          this.doubleJump = true;
 
-         if(this.thwomping)
+         if(this.thwomping) {
+
+            if(!this.stopped)
+                this.thwompPlayed = false;
+
             this.stopped = true;
+         }
 
          // Set starting position
          if(!this.startPosSet) {
@@ -594,7 +631,7 @@ Player.prototype.hurtCollision = function(x, y, w, h) {
 
 
 // Stage collision
-Player.prototype.stageCollision = function(stage, cam, tm) {
+Player.prototype.stageCollision = function(stage, evMan, cam, tm) {
 
     if(this.dying) return;
 
@@ -602,7 +639,7 @@ Player.prototype.stageCollision = function(stage, cam, tm) {
     this.updateCamera(cam, stage);
 
     // Stage collisions
-    stage.playerCollision(this, tm);
+    stage.playerCollision(this, evMan, tm);
 
     // Swimming?
     if(this.skills[4])

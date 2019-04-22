@@ -306,7 +306,7 @@ Stage.prototype.enemyCollision = function(e) {
 
 
 // Get player collisions
-Stage.prototype.playerCollision = function(pl, tm) {
+Stage.prototype.playerCollision = function(pl, evMan, tm) {
 
     const HURT_OFF = 8;
 
@@ -368,6 +368,9 @@ Stage.prototype.playerCollision = function(pl, tm) {
                         this.tmap.setTile(0, 0, x, y);
                         // Create a dying brick
                         this.createDyingBrick(x*16, y*16);
+
+                        // Play sound
+                        evMan.audio.playSample(evMan.sounds.dig, 0.5);
                     }
                 }
             }

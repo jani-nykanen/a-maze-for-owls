@@ -10,12 +10,12 @@ let Game = function() {
 
 
 // Update an object
-Game.prototype.updateObjects = function(arr, tm) {
+Game.prototype.updateObjects = function(arr, tm, evMan) {
 
     for(let i = 0; i < arr.length; ++ i) {
 
         arr[i].update(tm, this.cam);
-        arr[i].playerCollision(this.player, this.msg);
+        arr[i].playerCollision(this.player, this.msg, evMan);
     }
 }
 
@@ -137,6 +137,9 @@ Game.prototype.update = function(evMan, tm) {
     if(this.player.feathers >= this.stage.featherCount 
         ) {
 
+        // Stop music
+        evMan.audio.fadeOutMusic(evMan.sounds.background, 0.0, 1000);
+
         evMan.transition.activate(Fade.In, 1.0,
             () => {
                 evMan.changeScene("ending")
@@ -154,6 +157,8 @@ Game.prototype.update = function(evMan, tm) {
     if(evMan.vpad.buttons.start.state == State.Pressed) {
             
         this.paused = !this.paused;
+        // Play sound
+        evMan.audio.playSample(evMan.sounds.pause, 0.5);
     }
     if(this.paused) {
         
@@ -171,12 +176,12 @@ Game.prototype.update = function(evMan, tm) {
         // Update player
         this.player.update(this.cam, evMan, tm);
         // Player-stage collision
-        this.player.stageCollision(this.stage, this.cam, tm);
+        this.player.stageCollision(this.stage, evMan, this.cam, tm);
         // Update stage
         this.stage.update(tm);
 
         // Update discs
-        this.updateObjects(this.discs, tm);
+        this.updateObjects(this.discs, tm, evMan);
         // Update feathers
         this.updateObjects(this.feathers, tm);
 
@@ -189,7 +194,7 @@ Game.prototype.update = function(evMan, tm) {
         }
 
         // Update donut
-        this.donut.update(this.cam, tm);
+        this.donut.update(this.cam, evMan, tm);
         this.donut.playerCollision(this.player);
     }
     // Specific behavior if camera moving

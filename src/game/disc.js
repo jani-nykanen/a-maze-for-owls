@@ -75,7 +75,7 @@ Disc.prototype.update = function(tm, cam) {
 
 
 // Player collision
-Disc.prototype.playerCollision = function(pl, msg) {
+Disc.prototype.playerCollision = function(pl, msg, evMan) {
 
     if(!this.exist || pl.dying || !this.inCamera) return;
     
@@ -95,6 +95,9 @@ Disc.prototype.playerCollision = function(pl, msg) {
 
         // Make player learn a skill
         pl.skills[this.id] = true;
+
+        // Play sound
+        evMan.audio.playSample(evMan.sounds.disc, 0.65);
     }
 }
 

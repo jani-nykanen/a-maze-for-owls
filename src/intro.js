@@ -32,8 +32,10 @@ Intro.prototype.update = function(evMan, tm) {
 
     if(evMan.transition.active) return;
 
-    // Update timer
-    if( (this.timer -= 1.0 * tm) <= 0) {
+    // Update timer & check keyboard
+    if( ((this.timer -= 1.0 * tm) <= 0) ||
+        evMan.vpad.buttons.start.state == State.Pressed ||
+        evMan.vpad.buttons.fire1.state == State.Pressed ) {
 
         evMan.transition.activate(Fade.In, 2.0, 
             () => {evMan.changeScene("title");},

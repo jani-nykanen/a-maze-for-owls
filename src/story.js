@@ -62,6 +62,7 @@ Story.prototype.update = function(evMan, tm) {
             this.ctime += STORY_CHARACTER_TIME;
             ++ this.ccount;
         }
+        
 
     }
     else {

@@ -60,6 +60,10 @@ let Player = function(x, y) {
 
     // Feathers
     this.feathers = 0;
+    this.oldFeathers = 0;
+
+    // Sound effect states
+    this.hurtPlayed = true;
 }
 
 
@@ -151,6 +155,9 @@ Player.prototype.control = function(evMan, tm) {
                 this.speed.y = this.canJump ? JUMP_HEIGHT : DOUBLE_JUMP_HEIGHT;
                 if(!this.canJump)
                     this.doubleJump = false;
+
+                // Play jump
+                evMan.audio.playSample(evMan.sounds.jump, 0.5);
             }
         
         }
@@ -411,6 +418,13 @@ Player.prototype.update = function(cam, evMan, tm) {
 
     const THWOMP_SHAKE = 4;
 
+    // Play hurt sound
+    if(!this.hurtPlayed) {
+
+        evMan.audio.playSample(evMan.sounds.hurt, 0.5);
+        this.hurtPlayed = true;
+    }
+
     // Die, if dead
     if(this.dying) {
 
@@ -455,8 +469,15 @@ Player.prototype.update = function(cam, evMan, tm) {
     // Animate
     this.animate(tm);
 
+    // Play feather sound
+    if(this.oldFeathers != this.feathers) {
+
+        evMan.audio.playSample(evMan.sounds.feather, 0.5);
+    }
+
     this.canJump = false;
     this.oldSwimState = this.swimming;
+    this.oldFeathers = this.feathers;
 }
 
 
@@ -567,6 +588,7 @@ Player.prototype.hurtCollision = function(x, y, w, h) {
 
         // Die
         this.die();
+        this.hurtPlayed = false;
     }
 }
 

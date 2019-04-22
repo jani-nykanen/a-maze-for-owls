@@ -20,7 +20,9 @@ let Title = function() {
 // Initialize
 Title.prototype.init = function(evMan) {
 
-}
+    // Store refences for future use
+    this.evMan = evMan;
+}   
 
 
 // On load
@@ -53,6 +55,12 @@ Title.prototype.update = function(evMan, tm) {
         evMan.transition.activate(Fade.In, 1.0, 
             () => {evMan.changeScene("story");},
             {r: 0, g: 0, b: 0}, 4);
+
+        // Play sound
+        evMan.audio.playSample(evMan.sounds.select, 0.5);
+
+        // Fade out music
+        evMan.audio.fadeOutMusic(evMan.sounds.title, 0.0, 1000);
     }
 
     // Update "stage"
@@ -92,4 +100,14 @@ Title.prototype.draw = function(g) {
             g.canvas.width/2, g.canvas.height-ENTER_YOFF,
             0, 0, true);
     }
+}
+
+
+// On change
+Title.prototype.onChange = function() {
+
+    // Play music
+    this.evMan.audio.fadeInMusic(
+        this.evMan.sounds.title, 
+        1.0, 1000);
 }

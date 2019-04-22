@@ -13,13 +13,15 @@ let Global = function() {
 Global.prototype.init = function(evMan) {
 
     // ...
+    this.evMan = evMan;
 }
 
 
 // On load
 Global.prototype.onLoad = function(assets) {
 
-    // Implement
+    // TODO: Fix this in the engine!
+    this.evMan.sounds = assets.audio;
 }
 
 

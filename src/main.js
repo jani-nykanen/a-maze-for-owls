@@ -33,6 +33,19 @@ let main = function() {
 
             map: "map.tmx",
             collisions: "collisions.tmx",
+        },
+
+        // Samples
+        soundPath: "assets/audio",
+        sounds: {
+            background: "background.ogg",
+            title: "title.ogg",
+            
+            select: "select.wav",
+            choose: "choose.wav",
+            jump: "jump.wav",
+            feather: "feather.wav",
+            hurt: "hurt.wav",
         }
     }
 

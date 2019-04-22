@@ -102,6 +102,9 @@ Game.prototype.init = function(evMan) {
     this.discs = [];
     this.feathers = [];
     this.enemies = [];
+
+    // Store reference
+    this.evMan = evMan;
 }
 
 
@@ -228,4 +231,17 @@ Game.prototype.draw = function(g) {
     // Draw pause
     if(this.paused)
         this.drawPause(g);
+}
+
+
+// On change
+Game.prototype.onChange = function() {
+
+    // Stop title music
+    this.evMan.audio.stopMusic();
+
+    // Play music
+    this.evMan.audio.fadeInMusic(
+        this.evMan.sounds.background, 
+        1.0, 1000);
 }

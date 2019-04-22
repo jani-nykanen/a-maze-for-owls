@@ -97,7 +97,7 @@ Disc.prototype.playerCollision = function(pl, msg, evMan) {
         pl.skills[this.id] = true;
 
         // Play sound
-        evMan.audio.playSample(evMan.sounds.disc, 0.65);
+        evMan.audio.playSample(evMan.sounds.disc, 0.5);
     }
 }
 

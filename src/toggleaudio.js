@@ -23,6 +23,7 @@ ToggleAudio.prototype.drawBox = function(g, x, y, w, h) {
 
 // Initialize
 ToggleAudio.prototype.init = function(evMan) {
+    
 
 }
 
@@ -36,6 +37,7 @@ ToggleAudio.prototype.onLoad = function(assets) {
 
 // Update
 ToggleAudio.prototype.update = function(evMan, tm) {
+
 
     // Check key presses
     if(evMan.vpad.buttons.start.state == State.Pressed ||

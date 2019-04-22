@@ -160,7 +160,7 @@ Player.prototype.control = function(evMan, tm) {
                 else {
 
                     // Play jump
-                    evMan.audio.playSample(evMan.sounds.jump, 0.5);
+                    evMan.audio.playSample(evMan.sounds.jump, 0.4);
                 }
                 
             }
@@ -453,7 +453,7 @@ Player.prototype.update = function(cam, evMan, tm) {
     // Play thwomp sound
     if(!this.thwompPlayed) {
 
-        evMan.audio.playSample(evMan.sounds.thwomp, 0.5);
+        evMan.audio.playSample(evMan.sounds.thwomp, 0.4);
         this.thwompPlayed = true;
     }
 
@@ -504,7 +504,7 @@ Player.prototype.update = function(cam, evMan, tm) {
     // Play feather sound
     if(this.oldFeathers != this.feathers) {
 
-        evMan.audio.playSample(evMan.sounds.feather, 0.5);
+        evMan.audio.playSample(evMan.sounds.feather, 0.4);
     }
 
     this.canJump = false;

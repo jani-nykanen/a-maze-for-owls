@@ -54,7 +54,7 @@ Donut.prototype.update = function(cam, tm) {
         this.pos.x-24 < cam.pos.x+192 &&
         this.pos.y+8 > cam.pos.y  && 
         this.pos.y-40 < cam.pos.y+144);
-    if(!this.inCamera)
+    if(!this.inCamera || cam.moving)
         return;
 
     // Animate

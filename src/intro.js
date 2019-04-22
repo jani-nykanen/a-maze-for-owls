@@ -10,7 +10,7 @@ let Intro = function() {
     this.name = "intro";
 
     // Timer
-    this.timer = WAIT_TIME
+    this.timer = WAIT_TIME;
 }
 
 

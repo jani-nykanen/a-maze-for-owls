@@ -12,8 +12,7 @@ let Global = function() {
 // Initialize
 Global.prototype.init = function(evMan) {
 
-    // Fade in
-    evMan.transition.activate(Fade.Out, 1.0, null, null, 4);
+    // ...
 }
 
 

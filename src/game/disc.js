@@ -5,26 +5,26 @@
 // Messages
 const MESSAGES = [
 
-    "YOU LEARN: WALK.\n"+
+    "YOU LEARN TO WALK.\n"+
     "USE \1 AND \2 TO\n"+
     "WALK.",
     
-    "YOU LEARN: JUMP.\n"+
+    "YOU LEARN TO JUMP.\n"+
     "PRESS Z TO JUMP.",
     
-    "YOU LEARN: DOUBLE JUMP.\n"+
+    "YOU LEARN DOUBLE JUMP.\n"+
     "NOW YOU CAN JUMP\n"+
     "TWICE.",
     
-    "YOU LEARN: FLAP.\n"+
+    "YOU LEARN TO FLAP.\n"+
     "HOLD Z TO REDUCE YOUR\n"+
     "LANDING SPEED.",
     
-    "YOU LEARN: SWIM.\n"+
+    "YOU LEARN TO SWIM.\n"+
     "NOW YOU CAN SWIM IN\n"+
     "WATER.",
     
-    "YOU LEARN: HEAD THUMP.\n"+
+    "YOU LEARN HEAD THUMP.\n"+
     "PRESS Z AND \3 WHILE\n"+
     "ON AIR TO BREAK\n"+
     "BRICKS VERTICALLY."

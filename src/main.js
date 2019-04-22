@@ -55,7 +55,8 @@ let main = function() {
     let c = new Core();
 
     // Add scenes
-    c.addScene(new Intro(), true);
+    c.addScene(new ToggleAudio(), true);
+    c.addScene(new Intro(), false);
     c.addScene(new Title(), false);
     c.addScene(new Game(), false);
     c.addScene(new Story(), false);

@@ -20,8 +20,6 @@ Global.prototype.init = function(evMan) {
 // On load
 Global.prototype.onLoad = function(assets) {
 
-    // TODO: Fix this in the engine!
-    this.evMan.sounds = assets.audio;
 }
 
 
